@@ -6,6 +6,7 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
+local sizebtns = UDim2.new(0.447, 0, 0.175, 0)
 local normalspeed = hum.WalkSpeed
 local _CARREGAMENTO__ = Instance.new("Hint")
 _CARREGAMENTO__.Text = "Carregando..."
@@ -19,7 +20,7 @@ gui.ResetOnSpawn = true
 local main = Instance.new("Frame")
 main.Name = "Main"
 main.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-main.Size = UDim2.new(0.1, 0, 0.4, 0)
+main.Size = UDim2.new(0.184, 0, 0.532, 0)
 main.Position = UDim2.new(0.5, 0, 0.5, 0)
 main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.Parent = gui
@@ -32,6 +33,7 @@ border.CornerRadius = UDim.new(0.05, 0)
 border.Parent = main
 
 local list = Instance.new("UIListLayout")
+list.FillDirection = Enum.FillDirection.Horizontal
 list.Wraps = true
 list.HorizontalAlignment = Enum.HorizontalAlignment.Center
 list.VerticalAlignment = Enum.VerticalAlignment.Center
@@ -44,7 +46,7 @@ flybtn.Text = "Voar"
 flybtn.TextScaled = true
 flybtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 flybtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-flybtn.Size = UDim2.new(0.9, 0, 0.1, 0)
+flybtn.Size = sizebtns
 flybtn.Parent = main
 
 local borderbtn = Instance.new("UICorner")
@@ -57,7 +59,7 @@ speedbtn.Text = "Velocidade"
 speedbtn.TextScaled = true
 speedbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 speedbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedbtn.Size = UDim2.new(0.9, 0, 0.1, 0)
+speedbtn.Size = sizebtns
 speedbtn.Parent = main
 
 local borderbtn2 = Instance.new("UICorner")
@@ -70,7 +72,7 @@ espbtn.Text = "ESP"
 espbtn.TextScaled = true
 espbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 espbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-espbtn.Size = UDim2.new(0.9, 0, 0.1, 0)
+espbtn.Size = sizebtns
 espbtn.Parent = main
 
 local borderbtn3 = Instance.new("UICorner")
@@ -83,7 +85,7 @@ aimbotbtn.Text = "Aimbot"
 aimbotbtn.TextScaled = true
 aimbotbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 aimbotbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-aimbotbtn.Size = UDim2.new(0.9, 0, 0.1, 0)
+aimbotbtn.Size = sizebtns
 aimbotbtn.Parent = main
 
 local borderbtn4 = Instance.new("UICorner")
@@ -92,11 +94,11 @@ borderbtn4.Parent = aimbotbtn
 
 local tpbtn = Instance.new("TextButton")
 tpbtn.Name = "btn"
-tpbtn.Text = "Teleporte"
+tpbtn.Text = "Teleporte - T"
 tpbtn.TextScaled = true
 tpbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 tpbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-tpbtn.Size = UDim2.new(0.9, 0, 0.1, 0)
+tpbtn.Size = sizebtns
 tpbtn.Parent = main
 
 local borderbtn5 = Instance.new("UICorner")
@@ -109,7 +111,7 @@ spambtn.Text = "Spam remote"
 spambtn.TextScaled = true
 spambtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 spambtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-spambtn.Size = UDim2.new(0.9, 0, 0.1, 0)
+spambtn.Size = sizebtns
 spambtn.Parent = main
 
 local borderbtn6 = Instance.new("UICorner")
@@ -122,12 +124,40 @@ scriptsbtn.Text = "Desativar scripts"
 scriptsbtn.TextScaled = true
 scriptsbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 scriptsbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-scriptsbtn.Size = UDim2.new(0.9, 0, 0.1, 0)
+scriptsbtn.Size = sizebtns
 scriptsbtn.Parent = main
 
 local borderbtn7 = Instance.new("UICorner")
 borderbtn7.CornerRadius = UDim.new(0.05, 0)
 borderbtn7.Parent = scriptsbtn
+
+local puxarbtn = Instance.new("TextButton")
+puxarbtn.Name = "btn"
+puxarbtn.Text = "Puxar mira"
+puxarbtn.TextScaled = true
+puxarbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+puxarbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+puxarbtn.Size = sizebtns
+puxarbtn.Parent = main
+
+local borderbtn8 = Instance.new("UICorner")
+borderbtn8.CornerRadius = UDim.new(0.05, 0)
+borderbtn8.Parent = puxarbtn
+
+local esconderbtn = Instance.new("TextButton")
+esconderbtn.Name = "btn"
+esconderbtn.Text = "Esconder"
+esconderbtn.TextScaled = true
+esconderbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+esconderbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+esconderbtn.Size = sizebtns
+esconderbtn.Parent = main
+
+local borderbtn9 = Instance.new("UICorner")
+borderbtn9.CornerRadius = UDim.new(0.05, 0)
+borderbtn9.Parent = esconderbtn
+
+local modalallb = false
 
 local function setNoclip(state)
 	for _, v in ipairs(char:GetDescendants()) do
@@ -178,6 +208,7 @@ local fly = false
 local cantp = false
 local spamrem = false
 local scriptsoff = false
+local puxarmira = false
 
 local alvoAtual = nil
 local bv
@@ -198,6 +229,31 @@ local function getNearestTarget()
 
 				if distance < shortestDistance then
 					shortestDistance = distance
+					nearest = root
+				end
+			end
+		end
+	end
+
+	return nearest
+end
+
+local function getTargetNearMouse(maxDist)
+	local mousePos = mouse.Hit.Position
+
+	local nearest = nil
+	local shortestDistance = maxDist or 15
+
+	for _, v in ipairs(workspace:GetDescendants()) do
+		if v:IsA("Model") and v ~= char then
+			local hum = v:FindFirstChild("Humanoid")
+			local root = v:FindFirstChild("HumanoidRootPart")
+
+			if hum and root and hum.Health > 0 then
+				local dist = (root.Position - mousePos).Magnitude
+
+				if dist < shortestDistance then
+					shortestDistance = dist
 					nearest = root
 				end
 			end
@@ -245,6 +301,21 @@ end)
 UIS.InputBegan:Connect(function(input)
 	if input.KeyCode == Enum.KeyCode.T and cantp then
 		teleportParaMouse()
+	elseif input.KeyCode == Enum.KeyCode.M then
+		modalallb = not modalallb
+		if modalallb then
+			for _, btnss in ipairs(main:GetChildren()) do
+				if btnss:IsA("TextButton") then
+					btnss.Modal = true
+				end
+			end
+		else
+			for _, btnss in ipairs(main:GetChildren()) do
+				if btnss:IsA("TextButton") then
+					btnss.Modal = false
+				end
+			end
+		end
 	end
 end)
 
@@ -368,6 +439,20 @@ run.RenderStepped:Connect(function()
 			cam.CFrame = CFrame.new(cam.CFrame.Position, alvoAtual.Position)
 		end
 	end
+	if puxarmira then
+		local cam = workspace.CurrentCamera
+		local alvo = getTargetNearMouse(10)
+
+		if alvo then
+			local posCam = cam.CFrame.Position
+			local posAlvo = alvo.Position
+
+			cam.CFrame = cam.CFrame:Lerp(
+				CFrame.new(posCam, posAlvo),
+				2
+			)
+		end
+	end
 end)
 
 workspace.ChildAdded:Connect(function(child)
@@ -426,7 +511,7 @@ speedbtn.MouseButton1Click:Connect(function()
 		response.TextScaled = true
 		response.BackgroundColor3 = Color3.fromRGB(26, 70, 13)
 		response.TextColor3 = Color3.fromRGB(255, 255, 255)
-		response.Size = UDim2.new(0.9, 0, 0.1, 0)
+		response.Size = sizebtns
 		response.Parent = main
 
 		responsespeed = response
@@ -589,6 +674,80 @@ scriptsbtn.MouseButton1Click:Connect(function()
 	end
 end)
 
+puxarbtn.MouseButton1Click:Connect(function()
+	puxarmira = not puxarmira
+
+	if puxarmira then
+		puxarbtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		puxarbtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+	else
+		puxarbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		puxarbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	end
+end)
+
+esconderbtn.MouseButton1Click:Connect(function()
+	aimbot = false
+	esp = false
+	fly = false
+	cantp = false
+	spamrem = false
+	scriptsoff = false
+	puxarmira = false
+
+	task.spawn(function()
+		flybtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		flybtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		espbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		espbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		aimbotbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		aimbotbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		tpbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		tpbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		spambtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		spambtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		scriptsbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		scriptsbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+		scriptsbtn.Text = "Desativar scripts"
+
+		puxarbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		puxarbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		local function ativar(scr)
+			local tag = scr:FindFirstChild("_DESATIVADO_VIAX")
+			if tag then
+				scr.Enabled = true
+				tag:Destroy()
+			end
+		end
+
+		for _, scr in ipairs(plr.PlayerScripts:GetDescendants()) do
+			if scr:IsA("LocalScript") or scr:IsA("Script") then
+				ativar(scr)
+			end
+		end
+
+		for _, scr in ipairs(plr.PlayerGui:GetDescendants()) do
+			if scr:IsA("LocalScript") or scr:IsA("Script") then
+				ativar(scr)
+			end
+		end
+
+		for _, scr in ipairs(char:GetDescendants()) do
+			if scr:IsA("LocalScript") or scr:IsA("Script") then
+				ativar(scr)
+			end
+		end
+		existe = false
+		hum.WalkSpeed = normalspeed
+	end)
+end)
+
 plr.CharacterAdded:Connect(function(newChar)
 	char = newChar
 	hum = char:WaitForChild("Humanoid")
@@ -608,6 +767,7 @@ plr.CharacterAdded:Connect(function(newChar)
 	aimbot = false
 	alvoAtual = nil
 end)
+
 task.spawn(function()
 	task.wait(5)
 	_CARREGAMENTO__:Destroy()
