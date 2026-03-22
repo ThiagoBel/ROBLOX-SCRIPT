@@ -6,7 +6,7 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
-local sizebtns = UDim2.new(0.447, 0, 0.175, 0)
+local sizebtns = UDim2.new(0.447, 0, 0.148, 0)
 local normalspeed = hum.WalkSpeed
 local _CARREGAMENTO__ = Instance.new("Hint")
 _CARREGAMENTO__.Text = "Carregando..."
@@ -157,7 +157,37 @@ local borderbtn9 = Instance.new("UICorner")
 borderbtn9.CornerRadius = UDim.new(0.05, 0)
 borderbtn9.Parent = esconderbtn
 
+local onlyplrbtn = Instance.new("TextButton")
+onlyplrbtn.Name = "btn"
+onlyplrbtn.Text = "Apenas players"
+onlyplrbtn.TextScaled = true
+onlyplrbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+onlyplrbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+onlyplrbtn.Size = sizebtns
+onlyplrbtn.Parent = main
+
+local borderbtn10 = Instance.new("UICorner")
+borderbtn10.CornerRadius = UDim.new(0.05, 0)
+borderbtn10.Parent = onlyplrbtn
+
+local onlyheadbtn = Instance.new("TextButton")
+onlyheadbtn.Name = "btn"
+onlyheadbtn.Text = "Só capa"
+onlyheadbtn.TextScaled = true
+onlyheadbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+onlyheadbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+onlyheadbtn.Size = sizebtns
+onlyheadbtn.Parent = main
+
+local borderbtn11 = Instance.new("UICorner")
+borderbtn11.CornerRadius = UDim.new(0.05, 0)
+borderbtn11.Parent = onlyheadbtn
+
 local modalallb = false
+
+local function isPlayerModel(model)
+	return game.Players:GetPlayerFromCharacter(model) ~= nil
+end
 
 local function setNoclip(state)
 	for _, v in ipairs(char:GetDescendants()) do
@@ -167,13 +197,35 @@ local function setNoclip(state)
 	end
 end
 
+local aimbot = false
+local esp = false
+local fly = false
+local cantp = false
+local spamrem = false
+local scriptsoff = false
+local puxarmira = false
+local onlyplayers = false
+local onlyhead = false
+
+local alvoAtual = nil
+local bv
+local bg
+local speedFly = hum.WalkSpeed
+
 local mouse = plr:GetMouse()
 
 local function teleportParaMouse()
-	local root = char:FindFirstChild("HumanoidRootPart")
-	if not root then
-		return
+	local root = char:FindFirstChild("HumanoidRootPart") 
+		or char:FindFirstChild("UpperTorso") 
+		or char:FindFirstChild("Head")
+
+	if onlyhead then
+		root = char:FindFirstChild("Head") 
+			or char:FindFirstChild("HumanoidRootPart") 
+			or char:FindFirstChild("UpperTorso")
 	end
+
+	if not root then return end
 
 	local mousePos = mouse.Hit.Position
 
@@ -183,9 +235,17 @@ local function teleportParaMouse()
 	for _, v in ipairs(workspace:GetDescendants()) do
 		if v:IsA("Model") and v ~= char then
 			local hum = v:FindFirstChild("Humanoid")
-			local targetRoot = v:FindFirstChild("HumanoidRootPart")
+
+			local targetRoot = v:FindFirstChild("HumanoidRootPart") 
+				or v:FindFirstChild("UpperTorso") 
+				or v:FindFirstChild("Torso") 
+				or v:FindFirstChild("Head")
 
 			if hum and targetRoot and hum.Health > 0 then
+				if onlyplayers and not isPlayerModel(v) then
+					continue
+				end
+
 				local dist = (targetRoot.Position - mousePos).Magnitude
 
 				if dist < shortestDistance then
@@ -202,19 +262,6 @@ local function teleportParaMouse()
 	end
 end
 
-local aimbot = false
-local esp = false
-local fly = false
-local cantp = false
-local spamrem = false
-local scriptsoff = false
-local puxarmira = false
-
-local alvoAtual = nil
-local bv
-local bg
-local speedFly = hum.WalkSpeed
-
 local function getNearestTarget()
 	local nearest = nil
 	local shortestDistance = math.huge
@@ -222,9 +269,15 @@ local function getNearestTarget()
 	for _, v in ipairs(workspace:GetDescendants()) do
 		if v:IsA("Model") and v ~= char then
 			local hum = v:FindFirstChild("Humanoid")
-			local root = v:FindFirstChild("HumanoidRootPart")
-
+			local root = v:FindFirstChild("HumanoidRootPart") or v:FindFirstChild("UpperTorso") or v:FindFirstChild("Head")
+			if onlyhead then
+				root = v:FindFirstChild("Head") or v:FindFirstChild("HumanoidRootPart") or v:FindFirstChild("UpperTorso")
+			end
+			
 			if hum and root and hum.Health > 0 then
+				if onlyplayers and not isPlayerModel(v) then
+					continue
+				end
 				local distance = (root.Position - char.HumanoidRootPart.Position).Magnitude
 
 				if distance < shortestDistance then
@@ -247,9 +300,15 @@ local function getTargetNearMouse(maxDist)
 	for _, v in ipairs(workspace:GetDescendants()) do
 		if v:IsA("Model") and v ~= char then
 			local hum = v:FindFirstChild("Humanoid")
-			local root = v:FindFirstChild("HumanoidRootPart")
-
+			local root = v:FindFirstChild("HumanoidRootPart") or v:FindFirstChild("Head") or v:FindFirstChild("UpperTorso")
+			if onlyhead then
+				root = v:FindFirstChild("Head") or v:FindFirstChild("HumanoidRootPart") or v:FindFirstChild("UpperTorso")
+			end
+			
 			if hum and root and hum.Health > 0 then
+				if onlyplayers and not isPlayerModel(v) then
+					continue
+				end
 				local dist = (root.Position - mousePos).Magnitude
 
 				if dist < shortestDistance then
@@ -336,7 +395,10 @@ local function criarESP(model)
 		return
 	end
 
-	local root = model:FindFirstChild("HumanoidRootPart")
+	local root = model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("UpperTorso") or model:FindFirstChild("Head")
+	if onlyhead then
+		root = model:FindFirstChild("Head") or model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("UpperTorso")
+	end
 	if not root then
 		return
 	end
@@ -449,7 +511,7 @@ run.RenderStepped:Connect(function()
 
 			cam.CFrame = cam.CFrame:Lerp(
 				CFrame.new(posCam, posAlvo),
-				2
+				0.4
 			)
 		end
 	end
@@ -694,6 +756,8 @@ esconderbtn.MouseButton1Click:Connect(function()
 	spamrem = false
 	scriptsoff = false
 	puxarmira = false
+	onlyplayers = false
+	onlyhead = false
 
 	task.spawn(function()
 		flybtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
@@ -717,7 +781,12 @@ esconderbtn.MouseButton1Click:Connect(function()
 
 		puxarbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 		puxarbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-
+		
+		onlyplrbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		onlyplrbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+		
+		onlyheadbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		onlyheadbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 		local function ativar(scr)
 			local tag = scr:FindFirstChild("_DESATIVADO_VIAX")
 			if tag then
@@ -746,6 +815,30 @@ esconderbtn.MouseButton1Click:Connect(function()
 		existe = false
 		hum.WalkSpeed = normalspeed
 	end)
+end)
+
+onlyplrbtn.MouseButton1Click:Connect(function()
+	onlyplayers = not onlyplayers
+
+	if onlyplayers then
+		onlyplrbtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		onlyplrbtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+	else
+		onlyplrbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		onlyplrbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	end
+end)
+
+onlyheadbtn.MouseButton1Click:Connect(function()
+	onlyhead = not onlyhead
+
+	if onlyhead then
+		onlyheadbtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		onlyheadbtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+	else
+		onlyheadbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		onlyheadbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	end
 end)
 
 plr.CharacterAdded:Connect(function(newChar)
