@@ -6,6 +6,8 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
+local puxar_mira_size = 0.4
+local existe = false
 local sizebtns = UDim2.new(0.447, 0, 0.148, 0)
 local normalspeed = hum.WalkSpeed
 local _CARREGAMENTO__ = Instance.new("Hint")
@@ -262,6 +264,75 @@ local function teleportParaMouse()
 	end
 end
 
+local function escondertudo()
+	aimbot = false
+	esp = false
+	fly = false
+	cantp = false
+	spamrem = false
+	scriptsoff = false
+	puxarmira = false
+	onlyplayers = false
+	onlyhead = false
+
+	task.spawn(function()
+		flybtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		flybtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		espbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		espbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		aimbotbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		aimbotbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		tpbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		tpbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		spambtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		spambtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		scriptsbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		scriptsbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+		scriptsbtn.Text = "Desativar scripts"
+
+		puxarbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		puxarbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		onlyplrbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		onlyplrbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		onlyheadbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		onlyheadbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+		local function ativar(scr)
+			local tag = scr:FindFirstChild("_DESATIVADO_VIAX")
+			if tag then
+				scr.Enabled = true
+				tag:Destroy()
+			end
+		end
+
+		for _, scr in ipairs(plr.PlayerScripts:GetDescendants()) do
+			if scr:IsA("LocalScript") or scr:IsA("Script") then
+				ativar(scr)
+			end
+		end
+
+		for _, scr in ipairs(plr.PlayerGui:GetDescendants()) do
+			if scr:IsA("LocalScript") or scr:IsA("Script") then
+				ativar(scr)
+			end
+		end
+
+		for _, scr in ipairs(char:GetDescendants()) do
+			if scr:IsA("LocalScript") or scr:IsA("Script") then
+				ativar(scr)
+			end
+		end
+		existe = false
+		hum.WalkSpeed = normalspeed
+	end)
+end
+
 local function getNearestTarget()
 	local nearest = nil
 	local shortestDistance = math.huge
@@ -375,6 +446,8 @@ UIS.InputBegan:Connect(function(input)
 				end
 			end
 		end
+	elseif input.KeyCode == Enum.KeyCode.Up then
+		escondertudo()
 	end
 end)
 
@@ -511,7 +584,7 @@ run.RenderStepped:Connect(function()
 
 			cam.CFrame = cam.CFrame:Lerp(
 				CFrame.new(posCam, posAlvo),
-				0.4
+				puxar_mira_size
 			)
 		end
 	end
@@ -560,7 +633,6 @@ espbtn.MouseButton1Click:Connect(function()
 end)
 
 local responsespeed
-local existe = false
 
 speedbtn.MouseButton1Click:Connect(function()
 	if existe == false then
@@ -749,72 +821,7 @@ puxarbtn.MouseButton1Click:Connect(function()
 end)
 
 esconderbtn.MouseButton1Click:Connect(function()
-	aimbot = false
-	esp = false
-	fly = false
-	cantp = false
-	spamrem = false
-	scriptsoff = false
-	puxarmira = false
-	onlyplayers = false
-	onlyhead = false
-
-	task.spawn(function()
-		flybtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-		flybtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-		espbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-		espbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-		aimbotbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-		aimbotbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-		tpbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-		tpbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-		spambtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-		spambtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-		scriptsbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-		scriptsbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-		scriptsbtn.Text = "Desativar scripts"
-
-		puxarbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-		puxarbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-		
-		onlyplrbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-		onlyplrbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-		
-		onlyheadbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-		onlyheadbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-		local function ativar(scr)
-			local tag = scr:FindFirstChild("_DESATIVADO_VIAX")
-			if tag then
-				scr.Enabled = true
-				tag:Destroy()
-			end
-		end
-
-		for _, scr in ipairs(plr.PlayerScripts:GetDescendants()) do
-			if scr:IsA("LocalScript") or scr:IsA("Script") then
-				ativar(scr)
-			end
-		end
-
-		for _, scr in ipairs(plr.PlayerGui:GetDescendants()) do
-			if scr:IsA("LocalScript") or scr:IsA("Script") then
-				ativar(scr)
-			end
-		end
-
-		for _, scr in ipairs(char:GetDescendants()) do
-			if scr:IsA("LocalScript") or scr:IsA("Script") then
-				ativar(scr)
-			end
-		end
-		existe = false
-		hum.WalkSpeed = normalspeed
-	end)
+	escondertudo()
 end)
 
 onlyplrbtn.MouseButton1Click:Connect(function()
