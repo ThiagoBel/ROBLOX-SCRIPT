@@ -6,184 +6,167 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
+local VERSAO_SLENDER = "0.3"
 local puxar_mira_size = 0.4
+local puxar_mira_raio = 10
+local grossura_esp = 0.05
 local existe = false
-local sizebtns = UDim2.new(0.447, 0, 0.148, 0)
 local normalspeed = hum.WalkSpeed
 local _CARREGAMENTO__ = Instance.new("Hint")
-_CARREGAMENTO__.Text = "Carregando..."
+_CARREGAMENTO__.Text = "Carregando " .. VERSAO_SLENDER .. "v..."
 _CARREGAMENTO__.Parent = workspace
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "Configs"
+gui.IgnoreGuiInset = true
 gui.Parent = pg
 gui.ResetOnSpawn = true
 
 local main = Instance.new("Frame")
 main.Name = "Main"
-main.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-main.Size = UDim2.new(0.184, 0, 0.532, 0)
+main.Size = UDim2.new(0.35, 0, 0.67, 0)
 main.Position = UDim2.new(0.5, 0, 0.5, 0)
 main.AnchorPoint = Vector2.new(0.5, 0.5)
+main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 main.Parent = gui
 
-local drag = Instance.new("UIDragDetector")
-drag.Parent = main
+local configFrame = Instance.new("Frame")
+configFrame.Size = UDim2.new(0.3, 0, 0.5, 0)
+configFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+configFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+configFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+configFrame.Visible = false
+configFrame.Parent = gui
 
-local border = Instance.new("UICorner")
-border.CornerRadius = UDim.new(0.05, 0)
-border.Parent = main
+Instance.new("UICorner", configFrame).CornerRadius = UDim.new(0.08, 0)
+Instance.new("UIDragDetector", configFrame)
 
-local list = Instance.new("UIListLayout")
-list.FillDirection = Enum.FillDirection.Horizontal
-list.Wraps = true
-list.HorizontalAlignment = Enum.HorizontalAlignment.Center
-list.VerticalAlignment = Enum.VerticalAlignment.Center
-list.Padding = UDim.new(0.01, 0)
-list.Parent = main
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0.05, 0)
+layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+layout.VerticalAlignment = Enum.VerticalAlignment.Center
+layout.Parent = configFrame
 
-local flybtn = Instance.new("TextButton")
-flybtn.Name = "btn"
-flybtn.Text = "Voar"
-flybtn.TextScaled = true
-flybtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-flybtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-flybtn.Size = sizebtns
-flybtn.Parent = main
+Instance.new("UICorner", main).CornerRadius = UDim.new(0.08, 0)
+Instance.new("UIDragDetector", main)
 
-local borderbtn = Instance.new("UICorner")
-borderbtn.CornerRadius = UDim.new(0.05, 0)
-borderbtn.Parent = flybtn
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(120, 120, 255)
+stroke.Thickness = 2
+stroke.Transparency = 0.3
+stroke.Parent = main
 
-local speedbtn = Instance.new("TextButton")
-speedbtn.Name = "btn"
-speedbtn.Text = "Velocidade"
-speedbtn.TextScaled = true
-speedbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-speedbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedbtn.Size = sizebtns
-speedbtn.Parent = main
+local stroke2 = Instance.new("UIStroke")
+stroke2.Color = Color3.fromRGB(120, 120, 255)
+stroke2.Thickness = 2
+stroke2.Transparency = 0.3
+stroke2.Parent = configFrame
 
-local borderbtn2 = Instance.new("UICorner")
-borderbtn2.CornerRadius = UDim.new(0.05, 0)
-borderbtn2.Parent = speedbtn
+local grad = Instance.new("UIGradient")
+grad.Color = ColorSequence.new{
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(30,30,30)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(15,15,15))
+}
+grad.Rotation = 90
+grad.Parent = main
 
-local espbtn = Instance.new("TextButton")
-espbtn.Name = "btn"
-espbtn.Text = "ESP"
-espbtn.TextScaled = true
-espbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-espbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-espbtn.Size = sizebtns
-espbtn.Parent = main
+local grad2 = Instance.new("UIGradient")
+grad2.Color = ColorSequence.new{
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(30,30,30)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(15,15,15))
+}
+grad2.Rotation = 90
+grad2.Parent = configFrame
 
-local borderbtn3 = Instance.new("UICorner")
-borderbtn3.CornerRadius = UDim.new(0.05, 0)
-borderbtn3.Parent = espbtn
+local grid = Instance.new("UIGridLayout")
+grid.CellSize = UDim2.new(0.25, 0, 0.15, 0)
+grid.CellPadding = UDim2.new(0.05, 0, 0.02, 0)
+grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+grid.VerticalAlignment = Enum.VerticalAlignment.Center
+grid.Parent = main
 
-local aimbotbtn = Instance.new("TextButton")
-aimbotbtn.Name = "btn"
-aimbotbtn.Text = "Aimbot"
-aimbotbtn.TextScaled = true
-aimbotbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-aimbotbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-aimbotbtn.Size = sizebtns
-aimbotbtn.Parent = main
+local function criarBotao(texto)
+	local btn = Instance.new("TextButton")
+	btn.Text = texto
+	btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+	btn.TextColor3 = Color3.fromRGB(255,255,255)
+	btn.TextScaled = true
+	btn.Font = Enum.Font.GothamBold
 
-local borderbtn4 = Instance.new("UICorner")
-borderbtn4.CornerRadius = UDim.new(0.05, 0)
-borderbtn4.Parent = aimbotbtn
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0.2, 0)
 
-local tpbtn = Instance.new("TextButton")
-tpbtn.Name = "btn"
-tpbtn.Text = "Teleporte - T"
-tpbtn.TextScaled = true
-tpbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-tpbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-tpbtn.Size = sizebtns
-tpbtn.Parent = main
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = Color3.fromRGB(90, 90, 255)
+	stroke.Transparency = 0.6
+	stroke.Parent = btn
 
-local borderbtn5 = Instance.new("UICorner")
-borderbtn5.CornerRadius = UDim.new(0.05, 0)
-borderbtn5.Parent = tpbtn
+	btn.MouseEnter:Connect(function()
+		btn.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+	end)
 
-local spambtn = Instance.new("TextButton")
-spambtn.Name = "btn"
-spambtn.Text = "Spam remote"
-spambtn.TextScaled = true
-spambtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-spambtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-spambtn.Size = sizebtns
-spambtn.Parent = main
+	btn.MouseLeave:Connect(function()
+		btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+	end)
+	
+	btn.MouseButton1Down:Connect(function()
+		btn.Size = btn.Size - UDim2.new(0.02,0,0.02,0)
+	end)
 
-local borderbtn6 = Instance.new("UICorner")
-borderbtn6.CornerRadius = UDim.new(0.05, 0)
-borderbtn6.Parent = spambtn
+	btn.MouseButton1Up:Connect(function()
+		btn.Size = btn.Size + UDim2.new(0.02,0,0.02,0)
+	end)
 
-local scriptsbtn = Instance.new("TextButton")
-scriptsbtn.Name = "btn"
-scriptsbtn.Text = "Desativar scripts"
-scriptsbtn.TextScaled = true
-scriptsbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-scriptsbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-scriptsbtn.Size = sizebtns
-scriptsbtn.Parent = main
+	btn.Parent = main
+	return btn
+end
 
-local borderbtn7 = Instance.new("UICorner")
-borderbtn7.CornerRadius = UDim.new(0.05, 0)
-borderbtn7.Parent = scriptsbtn
+local function criarConfigItem(nome, valorInicial)
+	local container = Instance.new("Frame")
+	container.Size = UDim2.new(0.85, 0, 0.2, 0)
+	container.BackgroundTransparency = 1
+	container.Parent = configFrame
 
-local puxarbtn = Instance.new("TextButton")
-puxarbtn.Name = "btn"
-puxarbtn.Text = "Puxar mira"
-puxarbtn.TextScaled = true
-puxarbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-puxarbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-puxarbtn.Size = sizebtns
-puxarbtn.Parent = main
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(0.5, 0, 1, 0)
+	label.Text = nome
+	label.BackgroundTransparency = 1
+	label.TextColor3 = Color3.new(1,1,1)
+	label.TextScaled = true
+	label.Font = Enum.Font.GothamBold
+	label.Parent = container
 
-local borderbtn8 = Instance.new("UICorner")
-borderbtn8.CornerRadius = UDim.new(0.05, 0)
-borderbtn8.Parent = puxarbtn
+	local box = Instance.new("TextBox")
+	box.Size = UDim2.new(0.45, 0, 0.8, 0)
+	box.Position = UDim2.new(0.55, 0, 0.1, 0)
+	box.Text = tostring(valorInicial)
+	box.BackgroundColor3 = Color3.fromRGB(40,40,40)
+	box.TextColor3 = Color3.new(1,1,1)
+	box.TextScaled = true
+	box.Font = Enum.Font.Gotham
+	box.Parent = container
+	box.ClearTextOnFocus = false
 
-local esconderbtn = Instance.new("TextButton")
-esconderbtn.Name = "btn"
-esconderbtn.Text = "Esconder"
-esconderbtn.TextScaled = true
-esconderbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-esconderbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-esconderbtn.Size = sizebtns
-esconderbtn.Parent = main
+	Instance.new("UICorner", box).CornerRadius = UDim.new(0.2,0)
 
-local borderbtn9 = Instance.new("UICorner")
-borderbtn9.CornerRadius = UDim.new(0.05, 0)
-borderbtn9.Parent = esconderbtn
+	return box
+end
 
-local onlyplrbtn = Instance.new("TextButton")
-onlyplrbtn.Name = "btn"
-onlyplrbtn.Text = "Apenas players"
-onlyplrbtn.TextScaled = true
-onlyplrbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-onlyplrbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-onlyplrbtn.Size = sizebtns
-onlyplrbtn.Parent = main
+local flybtn = criarBotao("Voar")
+local espbtn = criarBotao("ESP")
+local aimbotbtn = criarBotao("Aimbot")
+local tpbtn = criarBotao("Teleportar - T")
+local spambtn = criarBotao("Spam remote")
+local scriptsbtn = criarBotao("Desativar scripts")
+local puxarbtn = criarBotao("Puxar mira")
+local esconderbtn = criarBotao("Esconder")
+local onlyplrbtn = criarBotao("Apenas players")
+local onlyheadbtn = criarBotao("Só capa")
+local configbtn = criarBotao("Configurações")
 
-local borderbtn10 = Instance.new("UICorner")
-borderbtn10.CornerRadius = UDim.new(0.05, 0)
-borderbtn10.Parent = onlyplrbtn
-
-local onlyheadbtn = Instance.new("TextButton")
-onlyheadbtn.Name = "btn"
-onlyheadbtn.Text = "Só capa"
-onlyheadbtn.TextScaled = true
-onlyheadbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-onlyheadbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-onlyheadbtn.Size = sizebtns
-onlyheadbtn.Parent = main
-
-local borderbtn11 = Instance.new("UICorner")
-borderbtn11.CornerRadius = UDim.new(0.05, 0)
-borderbtn11.Parent = onlyheadbtn
+local speedBox = criarConfigItem("Velocidade", hum.WalkSpeed)
+local puxarBox = criarConfigItem("Puxar Mira Força", puxar_mira_size)
+local puxarRaioBox = criarConfigItem("Puxar Mira Raio", puxar_mira_raio)
+local grossuraEspBox = criarConfigItem("Tamanho ESP", grossura_esp)
 
 local modalallb = false
 
@@ -208,6 +191,7 @@ local scriptsoff = false
 local puxarmira = false
 local onlyplayers = false
 local onlyhead = false
+local configsopen = false
 
 local alvoAtual = nil
 local bv
@@ -274,6 +258,7 @@ local function escondertudo()
 	puxarmira = false
 	onlyplayers = false
 	onlyhead = false
+	configsopen = false
 
 	task.spawn(function()
 		flybtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
@@ -303,6 +288,10 @@ local function escondertudo()
 
 		onlyheadbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 		onlyheadbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+		
+		configbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		configbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
 		local function ativar(scr)
 			local tag = scr:FindFirstChild("_DESATIVADO_VIAX")
 			if tag then
@@ -330,6 +319,12 @@ local function escondertudo()
 		end
 		existe = false
 		hum.WalkSpeed = normalspeed
+		configFrame.Visible = false
+		
+		speedBox.Text = tostring(hum.WalkSpeed)
+		puxarBox.Text = tostring(puxar_mira_size)
+		puxarRaioBox.Text = tostring(puxar_mira_raio)
+		grossuraEspBox.Text = tostring(grossura_esp)
 	end)
 end
 
@@ -454,38 +449,36 @@ end)
 local espObjects = {}
 
 local function criarESP(model)
-	if not model or not model:IsA("Model") then
-		return
-	end
-	if not model:FindFirstChild("Humanoid") then
-		return
-	end
-	if model == char then
-		return
-	end
-
-	if espObjects[model] then
-		return
-	end
+	if not model or not model:IsA("Model") then return end
+	if not model:FindFirstChild("Humanoid") then return end
+	if model == char then return end
+	if espObjects[model] then return end
 
 	local root = model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("UpperTorso") or model:FindFirstChild("Head")
-	if onlyhead then
-		root = model:FindFirstChild("Head") or model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("UpperTorso")
-	end
+
 	if not root then
 		return
 	end
 
-	local hl = Instance.new("Highlight")
-	hl.Name = "___InfoPlr_"
-	hl.Adornee = model
-	hl.FillTransparency = 1
-	hl.OutlineTransparency = 0
-	hl.OutlineColor = Color3.fromRGB(255, 0, 0)
-	hl.Parent = model
+	local billboard = Instance.new("BillboardGui")
+	billboard.Name = "Configs"
+	billboard.Adornee = root
+	billboard.AlwaysOnTop = true
+	billboard.Size = UDim2.new(5, 0, 6, 0)
+	billboard.Parent = model
+
+	local box = Instance.new("Frame")
+	box.Size = UDim2.new(1, 0, 1, 0)
+	box.BackgroundTransparency = 1
+	box.Parent = billboard
+	
+	local stroke = Instance.new("UIStroke")
+	stroke.Thickness = 2
+	stroke.Color = Color3.fromRGB(255, 0, 0)
+	stroke.Parent = box
 
 	local att0 = Instance.new("Attachment")
-	att0.Parent = char:WaitForChild("HumanoidRootPart")
+	att0.Parent = workspace
 
 	local att1 = Instance.new("Attachment")
 	att1.Parent = root
@@ -494,13 +487,13 @@ local function criarESP(model)
 	beam.Attachment0 = att0
 	beam.Attachment1 = att1
 	beam.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
-	beam.Width0 = 0.1
-	beam.Width1 = 0.1
+	beam.Width0 = grossura_esp
+	beam.Width1 = grossura_esp
 	beam.FaceCamera = true
 	beam.Parent = att0
 
 	espObjects[model] = {
-		highlight = hl,
+		billboard = billboard,
 		beam = beam,
 		att0 = att0,
 		att1 = att1
@@ -510,7 +503,7 @@ end
 local function removerESP(model)
 	local data = espObjects[model]
 	if data then
-		if data.highlight then data.highlight:Destroy() end
+		if data.billboard then data.billboard:Destroy() end
 		if data.beam then data.beam:Destroy() end
 		if data.att0 then data.att0:Destroy() end
 		if data.att1 then data.att1:Destroy() end
@@ -518,48 +511,74 @@ local function removerESP(model)
 	end
 end
 
-run.RenderStepped:Connect(function()
+run.RenderStepped:Connect(function()	
 	if fly then
 		setNoclip(true)
 
+		local root = char:WaitForChild("HumanoidRootPart")
+
 		if not bv then
 			bv = Instance.new("BodyVelocity")
-			bv.MaxForce = Vector3.new(1,1,1) * 100000
+			bv.MaxForce = Vector3.new(1,1,1) * 1000000
 			bv.Velocity = Vector3.zero
-			bv.Parent = char:WaitForChild("HumanoidRootPart")
+			bv.Parent = root
 		end
+
+		if not bg then
+			bg = Instance.new("BodyGyro")
+			bg.MaxTorque = Vector3.new(1,1,1) * 1000000
+			bg.P = 10000
+			bg.CFrame = root.CFrame
+			bg.Parent = root
+		end
+
+		hum.PlatformStand = true
 
 		local cam = workspace.CurrentCamera
 		local move = Vector3.zero
 
-		if keys.W then
-			move += cam.CFrame.LookVector
-		end
-		if keys.S then
-			move -= cam.CFrame.LookVector
-		end
-		if keys.A then
-			move -= cam.CFrame.RightVector
-		end
-		if keys.D then
-			move += cam.CFrame.RightVector
-		end
-		if keys.Space then
-			move += Vector3.new(0,1,0)
-		end
-		if keys.Shift then
-			move -= Vector3.new(0,1,0)
+		if keys.W then move += cam.CFrame.LookVector end
+		if keys.S then move -= cam.CFrame.LookVector end
+		if keys.A then move -= cam.CFrame.RightVector end
+		if keys.D then move += cam.CFrame.RightVector end
+		if keys.Space then move += Vector3.new(0,1,0) end
+		if keys.Shift then move -= Vector3.new(0,1,0) end
+
+		if move.Magnitude > 0 then
+			move = move.Unit
 		end
 
 		bv.Velocity = move * speedFly
-	elseif bv then
-		setNoclip(false)
-		bv:Destroy()
-		bv = nil
+
+		bg.CFrame = CFrame.new(root.Position, root.Position + cam.CFrame.LookVector)
+
+	else
+		if bv then
+			bv:Destroy()
+			bv = nil
+		end
+
+		if bg then
+			bg:Destroy()
+			bg = nil
+		end
+
+		hum.PlatformStand = false
 	end
 	if esp then
-		for _, v in ipairs(workspace:GetChildren()) do
-			criarESP(v)
+		for _, data in pairs(espObjects) do
+			if data.att0 and char and char:FindFirstChild("HumanoidRootPart") then
+				data.att0.WorldPosition = char.HumanoidRootPart.Position
+			end
+		end
+		if onlyplayers then
+			for _, v in ipairs(game.Players:GetPlayers()) do
+				criarESP(v.Character)
+			end
+		else
+			for _, v in ipairs(workspace:GetChildren()) do
+				criarESP(v)
+			end
 		end
 	else
 		for model, _ in pairs(espObjects) do
@@ -576,7 +595,7 @@ run.RenderStepped:Connect(function()
 	end
 	if puxarmira then
 		local cam = workspace.CurrentCamera
-		local alvo = getTargetNearMouse(10)
+		local alvo = getTargetNearMouse(puxar_mira_raio)
 
 		if alvo then
 			local posCam = cam.CFrame.Position
@@ -629,40 +648,6 @@ espbtn.MouseButton1Click:Connect(function()
 	else
 		espbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 		espbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-	end
-end)
-
-local responsespeed
-
-speedbtn.MouseButton1Click:Connect(function()
-	if existe == false then
-		existe = true
-
-		local response = Instance.new("TextBox")
-		response.Name = "response"
-		response.Text = ""
-		response.PlaceholderText = "Coloque a velocidade aqui (normal: " .. normalspeed .. ")"
-		response.TextScaled = true
-		response.BackgroundColor3 = Color3.fromRGB(26, 70, 13)
-		response.TextColor3 = Color3.fromRGB(255, 255, 255)
-		response.Size = sizebtns
-		response.Parent = main
-
-		responsespeed = response
-
-		response.FocusLost:Connect(function()
-			existe = false
-
-			if response.Text == "n" then
-				response.Text = normalspeed
-			end
-			local speed = tonumber(response.Text)
-			if speed then
-				hum.WalkSpeed = speed
-			end
-
-			response:Destroy()
-		end)
 	end
 end)
 
@@ -810,7 +795,8 @@ end)
 
 puxarbtn.MouseButton1Click:Connect(function()
 	puxarmira = not puxarmira
-
+	removerESP()
+	
 	if puxarmira then
 		puxarbtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		puxarbtn.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -827,6 +813,10 @@ end)
 onlyplrbtn.MouseButton1Click:Connect(function()
 	onlyplayers = not onlyplayers
 
+	for model, _ in pairs(espObjects) do
+		removerESP(model)
+	end
+	
 	if onlyplayers then
 		onlyplrbtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		onlyplrbtn.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -845,6 +835,18 @@ onlyheadbtn.MouseButton1Click:Connect(function()
 	else
 		onlyheadbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 		onlyheadbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	end
+end)
+
+configbtn.MouseButton1Click:Connect(function()
+	configsopen = not configsopen
+	configFrame.Visible = not configFrame.Visible
+	if configsopen then
+		configbtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		configbtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+	else
+		configbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		configbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 	end
 end)
 
@@ -868,7 +870,43 @@ plr.CharacterAdded:Connect(function(newChar)
 	alvoAtual = nil
 end)
 
+speedBox.FocusLost:Connect(function()
+	local val = tonumber(speedBox.Text)
+	if val then
+		hum.WalkSpeed = val
+	else
+		speedBox.Text = tostring(hum.WalkSpeed)
+	end
+end)
+
+puxarBox.FocusLost:Connect(function()
+	local val = tonumber(puxarBox.Text)
+	if val and val >= 0 and val <= 1 then
+		puxar_mira_size = val
+	else
+		puxarBox.Text = tostring(puxar_mira_size)
+	end
+end)
+
+puxarRaioBox.FocusLost:Connect(function()
+	local val = tonumber(puxarRaioBox.Text)
+	if val and val >= 0 then
+		puxar_mira_raio = val
+	else
+		puxarRaioBox.Text = tostring(puxar_mira_raio)
+	end
+end)
+
+grossuraEspBox.FocusLost:Connect(function()
+	local val = tonumber(grossuraEspBox.Text)
+	if val and val >= 0 and val <= 5 then
+		grossura_esp = val
+	else
+		grossuraEspBox.Text = tostring(grossura_esp)
+	end
+end)
+
 task.spawn(function()
-	task.wait(5)
+	task.wait(math.random(3, 5))
 	_CARREGAMENTO__:Destroy()
 end)
