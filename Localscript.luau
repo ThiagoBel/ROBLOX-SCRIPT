@@ -6,12 +6,13 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
-local VERSAO_SLENDER = "0.3"
+local VERSAO_SLENDER = "0.4"
 local puxar_mira_size = 0.4
 local puxar_mira_raio = 10
 local grossura_esp = 0.05
 local existe = false
 local normalspeed = hum.WalkSpeed
+local animAtual = nil
 local _CARREGAMENTO__ = Instance.new("Hint")
 _CARREGAMENTO__.Text = "Carregando " .. VERSAO_SLENDER .. "v..."
 _CARREGAMENTO__.Parent = workspace
@@ -30,6 +31,9 @@ main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 main.Parent = gui
 
+Instance.new("UICorner", main).CornerRadius = UDim.new(0.08, 0)
+Instance.new("UIDragDetector", main)
+
 local configFrame = Instance.new("Frame")
 configFrame.Size = UDim2.new(0.3, 0, 0.5, 0)
 configFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -41,14 +45,30 @@ configFrame.Parent = gui
 Instance.new("UICorner", configFrame).CornerRadius = UDim.new(0.08, 0)
 Instance.new("UIDragDetector", configFrame)
 
+local animFrame = Instance.new("Frame")
+animFrame.Size = UDim2.new(0.3, 0, 0.5, 0)
+animFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+animFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+animFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+animFrame.Visible = false
+animFrame.Parent = gui
+
+Instance.new("UICorner", animFrame).CornerRadius = UDim.new(0.08, 0)
+Instance.new("UIDragDetector", animFrame)
+
 local layout = Instance.new("UIListLayout")
 layout.Padding = UDim.new(0.05, 0)
 layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 layout.VerticalAlignment = Enum.VerticalAlignment.Center
 layout.Parent = configFrame
 
-Instance.new("UICorner", main).CornerRadius = UDim.new(0.08, 0)
-Instance.new("UIDragDetector", main)
+local layout2 = Instance.new("UIListLayout")
+layout2.Padding = UDim.new(0.05, 0)
+layout2.HorizontalAlignment = Enum.HorizontalAlignment.Center
+layout2.VerticalAlignment = Enum.VerticalAlignment.Center
+layout2.FillDirection = Enum.FillDirection.Horizontal
+layout2.Wraps = true
+layout2.Parent = animFrame
 
 local stroke = Instance.new("UIStroke")
 stroke.Color = Color3.fromRGB(120, 120, 255)
@@ -61,6 +81,12 @@ stroke2.Color = Color3.fromRGB(120, 120, 255)
 stroke2.Thickness = 2
 stroke2.Transparency = 0.3
 stroke2.Parent = configFrame
+
+local stroke3 = Instance.new("UIStroke")
+stroke3.Color = Color3.fromRGB(120, 120, 255)
+stroke3.Thickness = 2
+stroke3.Transparency = 0.3
+stroke3.Parent = animFrame
 
 local grad = Instance.new("UIGradient")
 grad.Color = ColorSequence.new{
@@ -78,12 +104,24 @@ grad2.Color = ColorSequence.new{
 grad2.Rotation = 90
 grad2.Parent = configFrame
 
+local grad3 = Instance.new("UIGradient")
+grad3.Color = ColorSequence.new{
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(30,30,30)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(15,15,15))
+}
+grad3.Rotation = 90
+grad3.Parent = animFrame
+
 local grid = Instance.new("UIGridLayout")
 grid.CellSize = UDim2.new(0.25, 0, 0.15, 0)
 grid.CellPadding = UDim2.new(0.05, 0, 0.02, 0)
 grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
 grid.VerticalAlignment = Enum.VerticalAlignment.Center
 grid.Parent = main
+
+local function isR6()
+	return hum.RigType == Enum.HumanoidRigType.R6
+end
 
 local function criarBotao(texto)
 	local btn = Instance.new("TextButton")
@@ -151,6 +189,38 @@ local function criarConfigItem(nome, valorInicial)
 	return box
 end
 
+local function criarAnimBotao(nome, id)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0.3, 0, 0.1, 0)
+	btn.Text = nome
+	btn.BackgroundColor3 = Color3.fromRGB(35,35,35)
+	btn.TextColor3 = Color3.new(1,1,1)
+	btn.TextScaled = true
+	btn.Font = Enum.Font.GothamBold
+
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0.2, 0)
+	
+	btn.MouseButton1Click:Connect(function()
+		local humanoid = char:FindFirstChild("Humanoid")
+		if not humanoid then return end
+
+		if animAtual then
+			animAtual:Stop()
+			animAtual = nil
+		end
+
+		local anim = Instance.new("Animation")
+		anim.AnimationId = "rbxassetid://" .. id
+
+		local track = humanoid:LoadAnimation(anim)
+		animAtual = track
+
+		track:Play()
+	end)
+
+	btn.Parent = animFrame
+end
+
 local flybtn = criarBotao("Voar")
 local espbtn = criarBotao("ESP")
 local aimbotbtn = criarBotao("Aimbot")
@@ -162,11 +232,42 @@ local esconderbtn = criarBotao("Esconder")
 local onlyplrbtn = criarBotao("Apenas players")
 local onlyheadbtn = criarBotao("Só capa")
 local configbtn = criarBotao("Configurações")
+local animbtn = criarBotao("Animações")
 
 local speedBox = criarConfigItem("Velocidade", hum.WalkSpeed)
 local puxarBox = criarConfigItem("Puxar Mira Força", puxar_mira_size)
 local puxarRaioBox = criarConfigItem("Puxar Mira Raio", puxar_mira_raio)
 local grossuraEspBox = criarConfigItem("Tamanho ESP", grossura_esp)
+
+if isR6() then
+	criarAnimBotao("Dança 1", 85983423437297)
+	criarAnimBotao("Dança 2", 182435998)
+	criarAnimBotao("Dança 3", 180435792)
+	criarAnimBotao("Clean Groove", 115737719121263)
+	criarAnimBotao("AeroStep", 97146766756261)
+	criarAnimBotao("Helicopter", 71394171273709)
+	criarAnimBotao("Default", 80284637216024)
+	criarAnimBotao("Spin", 137188430377596)
+	criarAnimBotao("Floss", 118452189793391)
+	criarAnimBotao("PP Music", 84384444087638)
+	criarAnimBotao("Take the L", 104117100016723)
+	criarAnimBotao("PARROT PARTAY", 74326795938995)
+	criarAnimBotao("Cat Dance", 118643736753225)
+	criarAnimBotao("Mannrobics", 139640291672655)
+else
+	criarAnimBotao("Dança 1", 507771019)
+	criarAnimBotao("Dança 2", 507776043)
+	criarAnimBotao("Macarena", 91285995353903)
+	criarAnimBotao("Worm", 85143652412989)
+	criarAnimBotao("Default", 140488210794630)
+	criarAnimBotao("Freestylin", 81485276118464)
+	criarAnimBotao("Eagle", 98646412723000)
+	criarAnimBotao("Flapper", 88171608252175)
+	criarAnimBotao("Take the L", 76967992434930)
+	criarAnimBotao("Fancy Feet", 103481579949357)
+	criarAnimBotao("Twist", 119538237479513)
+	criarAnimBotao("Inf Dab", 112053883763292)
+end
 
 local modalallb = false
 
@@ -192,6 +293,7 @@ local puxarmira = false
 local onlyplayers = false
 local onlyhead = false
 local configsopen = false
+local animopen = false
 
 local alvoAtual = nil
 local bv
@@ -259,6 +361,7 @@ local function escondertudo()
 	onlyplayers = false
 	onlyhead = false
 	configsopen = false
+	animopen = false
 
 	task.spawn(function()
 		flybtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
@@ -292,6 +395,8 @@ local function escondertudo()
 		configbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 		configbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 
+		animbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		animbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 		local function ativar(scr)
 			local tag = scr:FindFirstChild("_DESATIVADO_VIAX")
 			if tag then
@@ -320,6 +425,7 @@ local function escondertudo()
 		existe = false
 		hum.WalkSpeed = normalspeed
 		configFrame.Visible = false
+		animFrame.Visible = false
 		
 		speedBox.Text = tostring(hum.WalkSpeed)
 		puxarBox.Text = tostring(puxar_mira_size)
@@ -443,6 +549,11 @@ UIS.InputBegan:Connect(function(input)
 		end
 	elseif input.KeyCode == Enum.KeyCode.Up then
 		escondertudo()
+	elseif input.KeyCode == Enum.KeyCode.Down then
+		if animAtual then
+			animAtual:Stop()
+			animAtual = nil
+		end
 	end
 end)
 
@@ -906,6 +1017,18 @@ grossuraEspBox.FocusLost:Connect(function()
 	end
 end)
 
+animbtn.MouseButton1Click:Connect(function()
+	animopen = not animopen
+	animFrame.Visible = animopen
+
+	if animopen then
+		animbtn.BackgroundColor3 = Color3.fromRGB(255,255,255)
+		animbtn.TextColor3 = Color3.fromRGB(0,0,0)
+	else
+		animbtn.BackgroundColor3 = Color3.fromRGB(35,35,35)
+		animbtn.TextColor3 = Color3.fromRGB(255,255,255)
+	end
+end)
 task.spawn(function()
 	task.wait(math.random(3, 5))
 	_CARREGAMENTO__:Destroy()
