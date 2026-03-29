@@ -6,19 +6,22 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
-local VERSAO_SLENDER = "0.4"
+local VERSAO_SLENDER = "0.5"
 local puxar_mira_size = 0.4
 local puxar_mira_raio = 10
 local grossura_esp = 0.05
+local cannoclip = true
 local existe = false
 local normalspeed = hum.WalkSpeed
 local animAtual = nil
+local nameID = math.random(1111, 9999) .. "_" .. math.random(1, 9) .. "__GUI_" .. math.random(1, 99999)
+local nameIDTHIS = "Configs"
 local _CARREGAMENTO__ = Instance.new("Hint")
 _CARREGAMENTO__.Text = "Carregando " .. VERSAO_SLENDER .. "v..."
 _CARREGAMENTO__.Parent = workspace
 
 local gui = Instance.new("ScreenGui")
-gui.Name = "Configs"
+gui.Name = nameIDTHIS
 gui.IgnoreGuiInset = true
 gui.Parent = pg
 gui.ResetOnSpawn = true
@@ -145,7 +148,7 @@ local function criarBotao(texto)
 	btn.MouseLeave:Connect(function()
 		btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 	end)
-	
+
 	btn.MouseButton1Down:Connect(function()
 		btn.Size = btn.Size - UDim2.new(0.02,0,0.02,0)
 	end)
@@ -160,7 +163,7 @@ end
 
 local function criarConfigItem(nome, valorInicial)
 	local container = Instance.new("Frame")
-	container.Size = UDim2.new(0.85, 0, 0.2, 0)
+	container.Size = UDim2.new(0.85, 0, 0.1, 0)
 	container.BackgroundTransparency = 1
 	container.Parent = configFrame
 
@@ -199,7 +202,7 @@ local function criarAnimBotao(nome, id)
 	btn.Font = Enum.Font.GothamBold
 
 	Instance.new("UICorner", btn).CornerRadius = UDim.new(0.2, 0)
-	
+
 	btn.MouseButton1Click:Connect(function()
 		local humanoid = char:FindFirstChild("Humanoid")
 		if not humanoid then return end
@@ -238,6 +241,7 @@ local speedBox = criarConfigItem("Velocidade", hum.WalkSpeed)
 local puxarBox = criarConfigItem("Puxar Mira Força", puxar_mira_size)
 local puxarRaioBox = criarConfigItem("Puxar Mira Raio", puxar_mira_raio)
 local grossuraEspBox = criarConfigItem("Tamanho ESP", grossura_esp)
+local noclipFlyBox = criarConfigItem("No Clip ao voar", cannoclip)
 
 if isR6() then
 	criarAnimBotao("Dança 1", 85983423437297)
@@ -276,9 +280,11 @@ local function isPlayerModel(model)
 end
 
 local function setNoclip(state)
-	for _, v in ipairs(char:GetDescendants()) do
-		if v:IsA("BasePart") then
-			v.CanCollide = not state
+	if cannoclip == true then
+		for _, v in ipairs(char:GetDescendants()) do
+			if v:IsA("BasePart") then
+				v.CanCollide = not state
+			end
 		end
 	end
 end
@@ -391,7 +397,7 @@ local function escondertudo()
 
 		onlyheadbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 		onlyheadbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-		
+
 		configbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 		configbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 
@@ -426,7 +432,7 @@ local function escondertudo()
 		hum.WalkSpeed = normalspeed
 		configFrame.Visible = false
 		animFrame.Visible = false
-		
+
 		speedBox.Text = tostring(hum.WalkSpeed)
 		puxarBox.Text = tostring(puxar_mira_size)
 		puxarRaioBox.Text = tostring(puxar_mira_raio)
@@ -445,7 +451,7 @@ local function getNearestTarget()
 			if onlyhead then
 				root = v:FindFirstChild("Head") or v:FindFirstChild("HumanoidRootPart") or v:FindFirstChild("UpperTorso")
 			end
-			
+
 			if hum and root and hum.Health > 0 then
 				if onlyplayers and not isPlayerModel(v) then
 					continue
@@ -476,7 +482,7 @@ local function getTargetNearMouse(maxDist)
 			if onlyhead then
 				root = v:FindFirstChild("Head") or v:FindFirstChild("HumanoidRootPart") or v:FindFirstChild("UpperTorso")
 			end
-			
+
 			if hum and root and hum.Health > 0 then
 				if onlyplayers and not isPlayerModel(v) then
 					continue
@@ -582,7 +588,7 @@ local function criarESP(model)
 	box.Size = UDim2.new(1, 0, 1, 0)
 	box.BackgroundTransparency = 1
 	box.Parent = billboard
-	
+
 	local stroke = Instance.new("UIStroke")
 	stroke.Thickness = 2
 	stroke.Color = Color3.fromRGB(255, 0, 0)
@@ -907,7 +913,7 @@ end)
 puxarbtn.MouseButton1Click:Connect(function()
 	puxarmira = not puxarmira
 	removerESP()
-	
+
 	if puxarmira then
 		puxarbtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		puxarbtn.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -927,7 +933,7 @@ onlyplrbtn.MouseButton1Click:Connect(function()
 	for model, _ in pairs(espObjects) do
 		removerESP(model)
 	end
-	
+
 	if onlyplayers then
 		onlyplrbtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		onlyplrbtn.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -961,7 +967,18 @@ configbtn.MouseButton1Click:Connect(function()
 	end
 end)
 
+--[[hum.Died:Connect(function()
+	local clonegui = gui:Clone()
+	clonegui.Name = nameID
+	clonegui.Parent = game.ServerStorage
+end)]]
+
 plr.CharacterAdded:Connect(function(newChar)
+	--[[local guizin = game.ServerStorage:FindFirstChild(nameID)
+	if guizin then
+		guizin.Name = nameIDTHIS
+		guizin.Parent = plr.PlayerGui
+	end]]
 	char = newChar
 	hum = char:WaitForChild("Humanoid")
 
@@ -983,11 +1000,15 @@ end)
 
 speedBox.FocusLost:Connect(function()
 	local val = tonumber(speedBox.Text)
+	if speedBox.Text == "n" or speedBox.Text == "normal" then
+		val = normalspeed
+	end
 	if val then
 		hum.WalkSpeed = val
 	else
 		speedBox.Text = tostring(hum.WalkSpeed)
 	end
+	speedBox.Text = tostring(hum.WalkSpeed)
 end)
 
 puxarBox.FocusLost:Connect(function()
@@ -997,6 +1018,7 @@ puxarBox.FocusLost:Connect(function()
 	else
 		puxarBox.Text = tostring(puxar_mira_size)
 	end
+	puxarBox.Text = tostring(puxar_mira_size)
 end)
 
 puxarRaioBox.FocusLost:Connect(function()
@@ -1006,6 +1028,7 @@ puxarRaioBox.FocusLost:Connect(function()
 	else
 		puxarRaioBox.Text = tostring(puxar_mira_raio)
 	end
+	puxarRaioBox.Text = tostring(puxar_mira_raio)
 end)
 
 grossuraEspBox.FocusLost:Connect(function()
@@ -1015,6 +1038,18 @@ grossuraEspBox.FocusLost:Connect(function()
 	else
 		grossuraEspBox.Text = tostring(grossura_esp)
 	end
+	grossuraEspBox.Text = tostring(grossura_esp)
+end)
+
+noclipFlyBox.FocusLost:Connect(function()
+	if noclipFlyBox.Text == "t" or noclipFlyBox.Text == "true" then
+		cannoclip = true
+	elseif noclipFlyBox.Text == "f" or noclipFlyBox.Text == "false" then
+		cannoclip = false
+	else
+		noclipFlyBox.Text = tostring(cannoclip)
+	end
+	noclipFlyBox.Text = tostring(cannoclip)
 end)
 
 animbtn.MouseButton1Click:Connect(function()
@@ -1029,6 +1064,7 @@ animbtn.MouseButton1Click:Connect(function()
 		animbtn.TextColor3 = Color3.fromRGB(255,255,255)
 	end
 end)
+
 task.spawn(function()
 	task.wait(math.random(3, 5))
 	_CARREGAMENTO__:Destroy()
