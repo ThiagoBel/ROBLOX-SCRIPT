@@ -7,30 +7,37 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
-local VERSAO_SLENDER = "0.6"
+local VERSAO_SLENDER = "0.7"
 local ID_LOADEDFIRST = "_LOADED_FIRST________"
 local ID_STOCKLIGHT = "_STOCK_LIGHT__________"
-local ID_TERCEROZOI_OBJ = "_TERCEIRO_OLHO____"
-local SUBID_TERCEROZOI_VV = 0.5
+--[[local ID_TERCEROZOI_OBJ = "_TERCEIRO_OLHO____"
+local SUBID_TERCEROZOI_VV = 0.5]]
 local puxar_mira_size = 0.4
 local puxar_mira_raio = 10
 local grossura_esp = 0.05
+local distancia_tp = 2
 local cannoclip = true
 local existe = false
 local normalspeed = hum.WalkSpeed
 local normalfov = cam.FieldOfView
 local fovchanged = normalfov
+local plrspamed = ""
+local plr_FOCOMIRA = ""
+local speed_spam = 0
 local animAtual = nil
 local nameID = math.random(1111, 9999) .. "_" .. math.random(1, 9) .. "__GUI_" .. math.random(1, 99999)
 local nameIDTHIS = "Configs"
 local _CARREGAMENTO__ = Instance.new("Hint")
+local first_time = true
 
 if not plr:FindFirstChild(ID_LOADEDFIRST) then
+	first_time = true
 	local LOADED_FIRST = Instance.new("Configuration")
 	LOADED_FIRST.Parent = plr
 	LOADED_FIRST.Name = ID_LOADEDFIRST
 	_CARREGAMENTO__.Text = "Carregando " .. VERSAO_SLENDER .. "v..."
 else
+	first_time = false
 	_CARREGAMENTO__.Text = "Recarregando " .. VERSAO_SLENDER .. "v..."
 end
 _CARREGAMENTO__.Parent = workspace
@@ -53,7 +60,7 @@ Instance.new("UICorner", main).CornerRadius = UDim.new(0.08, 0)
 Instance.new("UIDragDetector", main)
 
 local configFrame = Instance.new("Frame")
-configFrame.Size = UDim2.new(0.3, 0, 0.5, 0)
+configFrame.Size = UDim2.new(0.3, 0, 0.67, 0)
 configFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 configFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 configFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
@@ -75,7 +82,7 @@ Instance.new("UICorner", animFrame).CornerRadius = UDim.new(0.08, 0)
 Instance.new("UIDragDetector", animFrame)
 
 local layout = Instance.new("UIListLayout")
-layout.Padding = UDim.new(0.05, 0)
+layout.Padding = UDim.new(0.01, 0)
 layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 layout.VerticalAlignment = Enum.VerticalAlignment.Center
 layout.Parent = configFrame
@@ -178,7 +185,7 @@ end
 
 local function criarConfigItem(nome, valorInicial)
 	local container = Instance.new("Frame")
-	container.Size = UDim2.new(0.85, 0, 0.1, 0)
+	container.Size = UDim2.new(0.85, 0, 0.067, 0)
 	container.BackgroundTransparency = 1
 	container.Parent = configFrame
 
@@ -260,14 +267,19 @@ local onlyplrbtn = criarBotao("Apenas players")
 local onlyheadbtn = criarBotao("Só capa")
 local configbtn = criarBotao("Configurações")
 local animbtn = criarBotao("Animações")
-local transparencybtn = criarBotao("Terceiro olho")
+--local transparencybtn = criarBotao("Terceiro olho")
 
 local speedBox = criarConfigItem("Velocidade", hum.WalkSpeed)
+local speedSpamBox = criarConfigItem("Velocidade spam", speed_spam)
 local puxarBox = criarConfigItem("Puxar Mira Força", puxar_mira_size)
 local puxarRaioBox = criarConfigItem("Puxar Mira Raio", puxar_mira_raio)
 local grossuraEspBox = criarConfigItem("Tamanho ESP", grossura_esp)
 local noclipFlyBox = criarConfigItem("No Clip ao voar", cannoclip)
 local fovBox = criarConfigItem("FOV", normalfov)
+local tpBox = criarConfigItem("Teleporte facil", "")
+local tpSpamBox = criarConfigItem("Teleporte spam")
+local tplimitBox = criarConfigItem("Teleporte distancia limite", distancia_tp)
+local mirafocoBox = criarConfigItem("Focar em um player", plr_FOCOMIRA)
 
 if isR6() then
 	criarAnimBotao("Wave", 128777973)
@@ -364,7 +376,7 @@ local function teleportParaMouse()
 
 	if nearestModel then
 		local offset = nearestModel.CFrame.LookVector * -3
-		root.CFrame = CFrame.new(nearestModel.Position + offset + Vector3.new(0, 2, 0))
+		root.CFrame = CFrame.new(nearestModel.Position + offset + Vector3.new(0, distancia_tp, 0))
 	end
 end
 
@@ -445,6 +457,11 @@ local function escondertudo()
 			end
 		end
 		existe = false
+		distancia_tp = 2
+		plr_FOCOMIRA = ""
+		plrspamed = ""
+		speed_spam = 0
+		fovchanged = normalfov
 		hum.WalkSpeed = normalspeed
 		configFrame.Visible = false
 		animFrame.Visible = false
@@ -453,6 +470,9 @@ local function escondertudo()
 		puxarBox.Text = tostring(puxar_mira_size)
 		puxarRaioBox.Text = tostring(puxar_mira_raio)
 		grossuraEspBox.Text = tostring(grossura_esp)
+		tpBox.Text = tostring(distancia_tp)
+		fovBox.Text = tostring(normalfov)
+		tpSpamBox.Text = ""
 	end)
 end
 
@@ -648,6 +668,20 @@ run.RenderStepped:Connect(function()
 	if normalfov ~= fovchanged then
 		cam.FieldOfView = fovchanged
 	end
+	if speed_spam ~= 0 then
+		hum.WalkSpeed = speed_spam
+	end
+	if plrspamed ~= "" then
+		for _, plrr in ipairs(workspace:GetChildren()) do
+			if plrr.Name == plrspamed and plrr:FindFirstChild("Humanoid") then
+				local root = char:FindFirstChild("HumanoidRootPart")
+				if root then
+					root.CFrame = CFrame.new(plrr:FindFirstChild("HumanoidRootPart").Position + Vector3.new(0, distancia_tp, 0))
+				end
+				break
+			end
+		end
+	end
 	if fly then
 		setNoclip(true)
 
@@ -723,21 +757,39 @@ run.RenderStepped:Connect(function()
 	if aimbot then
 		alvoAtual = getNearestTarget()
 
-		if alvoAtual then
-			cam.CFrame = CFrame.new(cam.CFrame.Position, alvoAtual.Position)
+		if plr_FOCOMIRA ~= "" then
+			if alvoAtual and alvoAtual.Parent.Name == plr_FOCOMIRA then
+				cam.CFrame = CFrame.new(cam.CFrame.Position, alvoAtual.Position)
+			end
+		else
+			if alvoAtual then
+				cam.CFrame = CFrame.new(cam.CFrame.Position, alvoAtual.Position)
+			end
 		end
 	end
 	if puxarmira then
 		local alvo = getTargetNearMouse(puxar_mira_raio)
 
-		if alvo then
-			local posCam = cam.CFrame.Position
-			local posAlvo = alvo.Position
+		if plr_FOCOMIRA ~= "" then
+			if alvo and alvo.Parent.Name == plr_FOCOMIRA then
+				local posCam = cam.CFrame.Position
+				local posAlvo = alvo.Position
 
-			cam.CFrame = cam.CFrame:Lerp(
-				CFrame.new(posCam, posAlvo),
-				puxar_mira_size
-			)
+				cam.CFrame = cam.CFrame:Lerp(
+					CFrame.new(posCam, posAlvo),
+					puxar_mira_size
+				)
+			end
+		else
+			if alvo then
+				local posCam = cam.CFrame.Position
+				local posAlvo = alvo.Position
+
+				cam.CFrame = cam.CFrame:Lerp(
+					CFrame.new(posCam, posAlvo),
+					puxar_mira_size
+				)
+			end
 		end
 	end
 	if vsnot then
@@ -776,7 +828,7 @@ run.RenderStepped:Connect(function()
 			game.ReplicatedStorage:FindFirstChild(ID_STOCKLIGHT):Destroy()
 		end
 	end
-	if terceirozoi then
+	--[[if terceirozoi then
 		for _, objjj in ipairs(workspace:GetDescendants()) do
 			if (objjj:IsA("Part") or objjj:IsA("MeshPart")) and not objjj:FindFirstChild(ID_TERCEROZOI_OBJ) then
 				local identificar = Instance.new("IntValue", objjj)
@@ -792,7 +844,7 @@ run.RenderStepped:Connect(function()
 				objjj:FindFirstChild(ID_TERCEROZOI_OBJ):Destroy()
 			end
 		end
-	end
+	end]]
 end)
 
 workspace.ChildAdded:Connect(function(child)
@@ -1061,7 +1113,7 @@ animbtn.MouseButton1Click:Connect(function()
 	end
 end)
 
-transparencybtn.MouseButton1Click:Connect(function()
+--[[transparencybtn.MouseButton1Click:Connect(function()
 	terceirozoi = not terceirozoi
 
 	if terceirozoi then
@@ -1071,7 +1123,7 @@ transparencybtn.MouseButton1Click:Connect(function()
 		transparencybtn.BackgroundColor3 = Color3.fromRGB(35,35,35)
 		transparencybtn.TextColor3 = Color3.fromRGB(255,255,255)
 	end
-end)
+end)]]
 
 plr.CharacterAdded:Connect(function(newChar)
 	script:Clone().Parent = plr.PlayerScripts
@@ -1100,6 +1152,14 @@ speedBox.FocusLost:Connect(function()
 		hum.WalkSpeed = val
 	end
 	speedBox.Text = tostring(hum.WalkSpeed)
+end)
+
+speedSpamBox.FocusLost:Connect(function()
+	local val = tonumber(speedSpamBox.Text)
+	if val then
+		speed_spam = val
+	end
+	speedSpamBox.Text = tostring(speed_spam)
 end)
 
 puxarBox.FocusLost:Connect(function()
@@ -1149,7 +1209,63 @@ fovBox.FocusLost:Connect(function()
 	fovBox.Text = tostring(fovchanged)
 end)
 
+tpBox.FocusLost:Connect(function()
+	if onlyplayers then
+		for _, plll in ipairs(game.Players:GetPlayers()) do
+			if plll.Name == tpBox.Text then
+				local root = char:FindFirstChild("HumanoidRootPart")
+				if root then
+					root.CFrame = CFrame.new(plll.Character:FindFirstChild("HumanoidRootPart").Position + Vector3.new(0, distancia_tp, 0))
+				end
+				break
+			end
+		end
+	else
+		for _, plll in ipairs(workspace:GetChildren()) do
+			if plll.Name == tpBox.Text and plll:FindFirstChild("Humanoid") then
+				local root = char:FindFirstChild("HumanoidRootPart")
+				if root then
+					root.CFrame = CFrame.new(plll:FindFirstChild("HumanoidRootPart").Position + Vector3.new(0, distancia_tp, 0))
+				end
+				break
+			end
+		end
+	end
+	tpBox.Text = ""
+end)
+
+tpSpamBox.FocusLost:Connect(function()
+	if onlyplayers then
+		for _, plrr in ipairs(game.Players:GetPlayers()) do
+			if plrr.Name == tpSpamBox.Text then
+				plrspamed = plrr.Name
+				break
+			end
+		end
+	else
+		plrspamed = tpSpamBox.Text
+	end
+	tpSpamBox.Text = plrspamed
+end)
+
+tplimitBox.FocusLost:Connect(function()
+	local val = tonumber(tplimitBox.Text)
+	if val then
+		distancia_tp = val
+	end
+	tplimitBox.Text = tostring(distancia_tp)
+end)
+
+mirafocoBox.FocusLost:Connect(function()
+	plr_FOCOMIRA = mirafocoBox.Text
+	mirafocoBox.Text = plr_FOCOMIRA
+end)
+
 task.spawn(function()
-	task.wait(math.random(3, 5))
+	if first_time == false then
+		task.wait(math.random(2, 3))
+	else
+		task.wait(math.random(3, 5))
+	end
 	_CARREGAMENTO__:Destroy()
 end)
