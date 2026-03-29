@@ -2,22 +2,37 @@
 local UIS = game:GetService("UserInputService")
 local run = game:GetService("RunService")
 local plr = game.Players.LocalPlayer
+local cam = workspace.CurrentCamera
 local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
-local VERSAO_SLENDER = "0.5"
+local VERSAO_SLENDER = "0.6"
+local ID_LOADEDFIRST = "_LOADED_FIRST________"
+local ID_STOCKLIGHT = "_STOCK_LIGHT__________"
+local ID_TERCEROZOI_OBJ = "_TERCEIRO_OLHO____"
+local SUBID_TERCEROZOI_VV = 0.5
 local puxar_mira_size = 0.4
 local puxar_mira_raio = 10
 local grossura_esp = 0.05
 local cannoclip = true
 local existe = false
 local normalspeed = hum.WalkSpeed
+local normalfov = cam.FieldOfView
+local fovchanged = normalfov
 local animAtual = nil
 local nameID = math.random(1111, 9999) .. "_" .. math.random(1, 9) .. "__GUI_" .. math.random(1, 99999)
 local nameIDTHIS = "Configs"
 local _CARREGAMENTO__ = Instance.new("Hint")
-_CARREGAMENTO__.Text = "Carregando " .. VERSAO_SLENDER .. "v..."
+
+if not plr:FindFirstChild(ID_LOADEDFIRST) then
+	local LOADED_FIRST = Instance.new("Configuration")
+	LOADED_FIRST.Parent = plr
+	LOADED_FIRST.Name = ID_LOADEDFIRST
+	_CARREGAMENTO__.Text = "Carregando " .. VERSAO_SLENDER .. "v..."
+else
+	_CARREGAMENTO__.Text = "Recarregando " .. VERSAO_SLENDER .. "v..."
+end
 _CARREGAMENTO__.Parent = workspace
 
 local gui = Instance.new("ScreenGui")
@@ -215,9 +230,17 @@ local function criarAnimBotao(nome, id)
 		local anim = Instance.new("Animation")
 		anim.AnimationId = "rbxassetid://" .. id
 
-		local track = humanoid:LoadAnimation(anim)
-		animAtual = track
+		local animator = humanoid:FindFirstChildOfClass("Animator")
+		if not animator then
+			animator = Instance.new("Animator")
+			animator.Parent = humanoid
+		end
 
+		local track = animator:LoadAnimation(anim)
+
+		track.Priority = Enum.AnimationPriority.Action4
+
+		animAtual = track
 		track:Play()
 	end)
 
@@ -230,47 +253,38 @@ local aimbotbtn = criarBotao("Aimbot")
 local tpbtn = criarBotao("Teleportar - T")
 local spambtn = criarBotao("Spam remote")
 local scriptsbtn = criarBotao("Desativar scripts")
+local vsnotbtn = criarBotao("Visão noturna")
 local puxarbtn = criarBotao("Puxar mira")
 local esconderbtn = criarBotao("Esconder")
 local onlyplrbtn = criarBotao("Apenas players")
 local onlyheadbtn = criarBotao("Só capa")
 local configbtn = criarBotao("Configurações")
 local animbtn = criarBotao("Animações")
+local transparencybtn = criarBotao("Terceiro olho")
 
 local speedBox = criarConfigItem("Velocidade", hum.WalkSpeed)
 local puxarBox = criarConfigItem("Puxar Mira Força", puxar_mira_size)
 local puxarRaioBox = criarConfigItem("Puxar Mira Raio", puxar_mira_raio)
 local grossuraEspBox = criarConfigItem("Tamanho ESP", grossura_esp)
 local noclipFlyBox = criarConfigItem("No Clip ao voar", cannoclip)
+local fovBox = criarConfigItem("FOV", normalfov)
 
 if isR6() then
-	criarAnimBotao("Dança 1", 85983423437297)
-	criarAnimBotao("Dança 2", 182435998)
-	criarAnimBotao("Dança 3", 180435792)
-	criarAnimBotao("Clean Groove", 115737719121263)
-	criarAnimBotao("AeroStep", 97146766756261)
-	criarAnimBotao("Helicopter", 71394171273709)
-	criarAnimBotao("Default", 80284637216024)
-	criarAnimBotao("Spin", 137188430377596)
-	criarAnimBotao("Floss", 118452189793391)
-	criarAnimBotao("PP Music", 84384444087638)
-	criarAnimBotao("Take the L", 104117100016723)
-	criarAnimBotao("PARROT PARTAY", 74326795938995)
-	criarAnimBotao("Cat Dance", 118643736753225)
-	criarAnimBotao("Mannrobics", 139640291672655)
+	criarAnimBotao("Wave", 128777973)
+	criarAnimBotao("Cheer", 182393478)
+	criarAnimBotao("Sit", 178130996)
+	criarAnimBotao("Dance 1", 182435998)
+	criarAnimBotao("Dance 2", 182436842)
+	criarAnimBotao("Dance 3", 182436935)
 else
-	criarAnimBotao("Dança 1", 507771019)
-	criarAnimBotao("Dança 2", 507776043)
-	criarAnimBotao("Macarena", 91285995353903)
-	criarAnimBotao("Worm", 85143652412989)
-	criarAnimBotao("Default", 140488210794630)
-	criarAnimBotao("Freestylin", 81485276118464)
-	criarAnimBotao("Eagle", 98646412723000)
-	criarAnimBotao("Flapper", 88171608252175)
-	criarAnimBotao("Take the L", 76967992434930)
-	criarAnimBotao("Fancy Feet", 103481579949357)
-	criarAnimBotao("Twist", 119538237479513)
-	criarAnimBotao("Inf Dab", 112053883763292)
+	criarAnimBotao("Dance 1", 507771019)
+	criarAnimBotao("Dance 2", 507776043)
+	criarAnimBotao("Dance 3", 507777268)
+	criarAnimBotao("Wave", 507770239)
+	criarAnimBotao("Point", 507770453)
+	criarAnimBotao("Cheer", 507770677)
+	criarAnimBotao("Laugh", 507770818)
+	criarAnimBotao("Sit", 2506281703)
 end
 
 local modalallb = false
@@ -295,11 +309,13 @@ local fly = false
 local cantp = false
 local spamrem = false
 local scriptsoff = false
+local vsnot = false
 local puxarmira = false
 local onlyplayers = false
 local onlyhead = false
 local configsopen = false
 local animopen = false
+local terceirozoi = false
 
 local alvoAtual = nil
 local bv
@@ -309,14 +325,10 @@ local speedFly = hum.WalkSpeed
 local mouse = plr:GetMouse()
 
 local function teleportParaMouse()
-	local root = char:FindFirstChild("HumanoidRootPart") 
-		or char:FindFirstChild("UpperTorso") 
-		or char:FindFirstChild("Head")
+	local root = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("UpperTorso") or char:FindFirstChild("Head")
 
 	if onlyhead then
-		root = char:FindFirstChild("Head") 
-			or char:FindFirstChild("HumanoidRootPart") 
-			or char:FindFirstChild("UpperTorso")
+		root = char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("UpperTorso")
 	end
 
 	if not root then return end
@@ -363,6 +375,7 @@ local function escondertudo()
 	cantp = false
 	spamrem = false
 	scriptsoff = false
+	vsnot = false
 	puxarmira = false
 	onlyplayers = false
 	onlyhead = false
@@ -388,6 +401,9 @@ local function escondertudo()
 		scriptsbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 		scriptsbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 		scriptsbtn.Text = "Desativar scripts"
+
+		vsnotbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		vsnotbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 		puxarbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 		puxarbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -628,7 +644,10 @@ local function removerESP(model)
 	end
 end
 
-run.RenderStepped:Connect(function()	
+run.RenderStepped:Connect(function()
+	if normalfov ~= fovchanged then
+		cam.FieldOfView = fovchanged
+	end
 	if fly then
 		setNoclip(true)
 
@@ -651,7 +670,6 @@ run.RenderStepped:Connect(function()
 
 		hum.PlatformStand = true
 
-		local cam = workspace.CurrentCamera
 		local move = Vector3.zero
 
 		if keys.W then move += cam.CFrame.LookVector end
@@ -703,7 +721,6 @@ run.RenderStepped:Connect(function()
 		end
 	end
 	if aimbot then
-		local cam = workspace.CurrentCamera
 		alvoAtual = getNearestTarget()
 
 		if alvoAtual then
@@ -711,7 +728,6 @@ run.RenderStepped:Connect(function()
 		end
 	end
 	if puxarmira then
-		local cam = workspace.CurrentCamera
 		local alvo = getTargetNearMouse(puxar_mira_raio)
 
 		if alvo then
@@ -722,6 +738,59 @@ run.RenderStepped:Connect(function()
 				CFrame.new(posCam, posAlvo),
 				puxar_mira_size
 			)
+		end
+	end
+	if vsnot then
+		if not game.ReplicatedStorage:FindFirstChild(ID_STOCKLIGHT) then
+			local papapasta = Instance.new("Folder", game.ReplicatedStorage)
+			papapasta.Name = ID_STOCKLIGHT
+			papapasta:SetAttribute("STARTFOV", game.Lighting.FogStart)
+			papapasta:SetAttribute("ENDFOV", game.Lighting.FogEnd)
+			papapasta:SetAttribute("COLOR", game.Lighting.FogColor)
+			papapasta:SetAttribute("BRIGHTNESS", game.Lighting.Brightness)
+			papapasta:SetAttribute("ExposureCompensation", game.Lighting.ExposureCompensation)
+			papapasta:SetAttribute("EnvironmentDiffuseScale", game.Lighting.EnvironmentDiffuseScale)
+		end
+		for _, coisasluz in ipairs(game.Lighting:GetChildren()) do
+			if coisasluz:IsA("Atmosphere") then
+				coisasluz.Parent = game.ReplicatedStorage:FindFirstChild(ID_STOCKLIGHT)
+			end
+		end
+		game.Lighting.FogStart = 0
+		game.Lighting.FogEnd = 1111111111
+		game.Lighting.FogColor = Color3.fromRGB(255, 255, 255)
+		game.Lighting.Brightness = 2
+		game.Lighting.ExposureCompensation = 0
+		game.Lighting.EnvironmentDiffuseScale = 1
+	else
+		if game.ReplicatedStorage:FindFirstChild(ID_STOCKLIGHT) then
+			for _, coisasluz in ipairs(game.ReplicatedStorage:FindFirstChild(ID_STOCKLIGHT):GetChildren()) do
+				coisasluz.Parent = game.Lighting
+			end
+			game.Lighting.FogStart = game.ReplicatedStorage:FindFirstChild(ID_STOCKLIGHT):GetAttribute("STARTFOV")
+			game.Lighting.FogEnd = game.ReplicatedStorage:FindFirstChild(ID_STOCKLIGHT):GetAttribute("ENDFOV")
+			game.Lighting.FogColor = game.ReplicatedStorage:FindFirstChild(ID_STOCKLIGHT):GetAttribute("COLOR")
+			game.Lighting.Brightness = game.ReplicatedStorage:FindFirstChild(ID_STOCKLIGHT):GetAttribute("BRIGHTNESS")
+			game.Lighting.ExposureCompensation = game.ReplicatedStorage:FindFirstChild(ID_STOCKLIGHT):GetAttribute("ExposureCompensation")
+			game.Lighting.EnvironmentDiffuseScale = game.ReplicatedStorage:FindFirstChild(ID_STOCKLIGHT):GetAttribute("EnvironmentDiffuseScale")
+			game.ReplicatedStorage:FindFirstChild(ID_STOCKLIGHT):Destroy()
+		end
+	end
+	if terceirozoi then
+		for _, objjj in ipairs(workspace:GetDescendants()) do
+			if (objjj:IsA("Part") or objjj:IsA("MeshPart")) and not objjj:FindFirstChild(ID_TERCEROZOI_OBJ) then
+				local identificar = Instance.new("IntValue", objjj)
+				identificar.Name = ID_TERCEROZOI_OBJ
+				identificar.Value = objjj.Transparency
+				objjj.Transparency = SUBID_TERCEROZOI_VV
+			end
+		end
+	else
+		for _, objjj in ipairs(workspace:GetDescendants()) do
+			if (objjj:IsA("Part") or objjj:IsA("MeshPart")) and objjj:FindFirstChild(ID_TERCEROZOI_OBJ) then
+				objjj.Transparency = objjj:FindFirstChild(ID_TERCEROZOI_OBJ).Value
+				objjj:FindFirstChild(ID_TERCEROZOI_OBJ):Destroy()
+			end
 		end
 	end
 end)
@@ -910,6 +979,18 @@ scriptsbtn.MouseButton1Click:Connect(function()
 	end
 end)
 
+vsnotbtn.MouseButton1Click:Connect(function()
+	vsnot = not vsnot
+
+	if vsnot then
+		vsnotbtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		vsnotbtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+	else
+		vsnotbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		vsnotbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	end
+end)
+
 puxarbtn.MouseButton1Click:Connect(function()
 	puxarmira = not puxarmira
 	removerESP()
@@ -967,18 +1048,33 @@ configbtn.MouseButton1Click:Connect(function()
 	end
 end)
 
---[[hum.Died:Connect(function()
-	local clonegui = gui:Clone()
-	clonegui.Name = nameID
-	clonegui.Parent = game.ServerStorage
-end)]]
+animbtn.MouseButton1Click:Connect(function()
+	animopen = not animopen
+	animFrame.Visible = animopen
+
+	if animopen then
+		animbtn.BackgroundColor3 = Color3.fromRGB(255,255,255)
+		animbtn.TextColor3 = Color3.fromRGB(0,0,0)
+	else
+		animbtn.BackgroundColor3 = Color3.fromRGB(35,35,35)
+		animbtn.TextColor3 = Color3.fromRGB(255,255,255)
+	end
+end)
+
+transparencybtn.MouseButton1Click:Connect(function()
+	terceirozoi = not terceirozoi
+
+	if terceirozoi then
+		transparencybtn.BackgroundColor3 = Color3.fromRGB(255,255,255)
+		transparencybtn.TextColor3 = Color3.fromRGB(0,0,0)
+	else
+		transparencybtn.BackgroundColor3 = Color3.fromRGB(35,35,35)
+		transparencybtn.TextColor3 = Color3.fromRGB(255,255,255)
+	end
+end)
 
 plr.CharacterAdded:Connect(function(newChar)
-	--[[local guizin = game.ServerStorage:FindFirstChild(nameID)
-	if guizin then
-		guizin.Name = nameIDTHIS
-		guizin.Parent = plr.PlayerGui
-	end]]
+	script:Clone().Parent = plr.PlayerScripts
 	char = newChar
 	hum = char:WaitForChild("Humanoid")
 
@@ -990,12 +1086,9 @@ plr.CharacterAdded:Connect(function(newChar)
 		bv = nil
 	end
 
-	for model, _ in pairs(espObjects) do
-		removerESP(model)
-	end
-
 	aimbot = false
 	alvoAtual = nil
+	script:Destroy()
 end)
 
 speedBox.FocusLost:Connect(function()
@@ -1005,8 +1098,6 @@ speedBox.FocusLost:Connect(function()
 	end
 	if val then
 		hum.WalkSpeed = val
-	else
-		speedBox.Text = tostring(hum.WalkSpeed)
 	end
 	speedBox.Text = tostring(hum.WalkSpeed)
 end)
@@ -1015,8 +1106,6 @@ puxarBox.FocusLost:Connect(function()
 	local val = tonumber(puxarBox.Text)
 	if val and val >= 0 and val <= 1 then
 		puxar_mira_size = val
-	else
-		puxarBox.Text = tostring(puxar_mira_size)
 	end
 	puxarBox.Text = tostring(puxar_mira_size)
 end)
@@ -1025,8 +1114,6 @@ puxarRaioBox.FocusLost:Connect(function()
 	local val = tonumber(puxarRaioBox.Text)
 	if val and val >= 0 then
 		puxar_mira_raio = val
-	else
-		puxarRaioBox.Text = tostring(puxar_mira_raio)
 	end
 	puxarRaioBox.Text = tostring(puxar_mira_raio)
 end)
@@ -1035,8 +1122,6 @@ grossuraEspBox.FocusLost:Connect(function()
 	local val = tonumber(grossuraEspBox.Text)
 	if val and val >= 0 and val <= 5 then
 		grossura_esp = val
-	else
-		grossuraEspBox.Text = tostring(grossura_esp)
 	end
 	grossuraEspBox.Text = tostring(grossura_esp)
 end)
@@ -1052,17 +1137,16 @@ noclipFlyBox.FocusLost:Connect(function()
 	noclipFlyBox.Text = tostring(cannoclip)
 end)
 
-animbtn.MouseButton1Click:Connect(function()
-	animopen = not animopen
-	animFrame.Visible = animopen
-
-	if animopen then
-		animbtn.BackgroundColor3 = Color3.fromRGB(255,255,255)
-		animbtn.TextColor3 = Color3.fromRGB(0,0,0)
+fovBox.FocusLost:Connect(function()
+	if fovBox.Text == "n" then
+		fovchanged = normalfov
 	else
-		animbtn.BackgroundColor3 = Color3.fromRGB(35,35,35)
-		animbtn.TextColor3 = Color3.fromRGB(255,255,255)
+		local val = tonumber(fovBox.Text)
+		if val then
+			fovchanged = val
+		end
 	end
+	fovBox.Text = tostring(fovchanged)
 end)
 
 task.spawn(function()
