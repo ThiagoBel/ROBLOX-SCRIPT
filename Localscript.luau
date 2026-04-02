@@ -8,7 +8,7 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
-local VERSAO_SLENDER = "1.1"
+local VERSAO_SLENDER = "1.15"
 local ID_LOADEDFIRST = "_LOADED_FIRST________"
 local ID_STOCKLIGHT = "_STOCK_LIGHT__________"
 local ID_CONSOLELOGS = "_CONSOLE_LOGS________"
@@ -305,7 +305,7 @@ end
 
 local function criarConfigItem(nome, valorInicial)
 	local container = Instance.new("Frame")
-	container.Size = UDim2.new(0.85, 0, 0.044, 0)
+	container.Size = UDim2.new(0.85, 0, 0.040, 0)
 	container.BackgroundTransparency = 1
 	container.Parent = configFrame
 
@@ -963,12 +963,17 @@ run.RenderStepped:Connect(function()
 				if root and targetRoot then
 					local velocidade = tempoDuranteTPsuspeito
 					local distancia = distancia_tp
+
 					tempoOsc += run.RenderStepped:Wait()
-					
+
 					local offsetZ = math.sin(tempoOsc * velocidade) * distancia
 					local basePos = targetRoot.Position - targetRoot.CFrame.LookVector * 4
 					local finalPos = basePos + targetRoot.CFrame.LookVector * offsetZ
-					root.CFrame = CFrame.new(finalPos + Vector3.new(0, 0, 0))
+
+					root.CFrame = CFrame.new(
+						finalPos,
+						targetRoot.Position
+					)
 				end
 				break
 			end
