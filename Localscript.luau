@@ -8,7 +8,7 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
-local VERSAO_SLENDER = "1.0"
+local VERSAO_SLENDER = "1.1"
 local ID_LOADEDFIRST = "_LOADED_FIRST________"
 local ID_STOCKLIGHT = "_STOCK_LIGHT__________"
 local ID_CONSOLELOGS = "_CONSOLE_LOGS________"
@@ -1748,8 +1748,37 @@ tptemposuspeitoBox.FocusLost:Connect(function()
 end)
 
 tpSpamBox3.FocusLost:Connect(function()
-	plrspamed3 = tpSpamBox3.Text
-	tpSpamBox3.Text = tostring(plrspamed3)
+	if onlyplayers then
+		if tpSpamBox3.Text == "random" then
+			local vava = {}
+
+			for _, plrr in ipairs(game.Players:GetPlayers()) do
+				table.insert(vava, plrr.Name)
+			end
+			plrspamed3 = vava[math.random(1, #vava)]
+		else
+			for _, plrr in ipairs(game.Players:GetPlayers()) do
+				if plrr.Name == tpSpamBox3.Text then
+					plrspamed3 = plrr.Name
+					break
+				end
+			end
+		end
+	else
+		if tpSpamBox3.Text == "random" then
+			local vava = {}
+
+			for _, plrr in ipairs(workspace:GetDescendants()) do
+				if plrr:FindFirstChild("Humanoid") then
+					table.insert(vava, plrr.Name)
+				end
+			end
+			plrspamed3 = vava[math.random(1, #vava)]
+		else
+			plrspamed3 = tpSpamBox3.Text
+		end
+	end
+	tpSpamBox3.Text = plrspamed3
 end)
 
 LGS.MessageOut:Connect(function(msg, typee)
