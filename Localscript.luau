@@ -8,7 +8,7 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
-local VERSAO_SLENDER = "1.15"
+local VERSAO_SLENDER = "1.2"
 local ID_LOADEDFIRST = "_LOADED_FIRST________"
 local ID_STOCKLIGHT = "_STOCK_LIGHT__________"
 local ID_CONSOLELOGS = "_CONSOLE_LOGS________"
@@ -927,7 +927,29 @@ run.RenderStepped:Connect(function()
 			if plrr.Name == plrspamed and plrr:FindFirstChild("Humanoid") then
 				local root = char:FindFirstChild("HumanoidRootPart")
 				if root then
-					root.CFrame = CFrame.new(plrr:FindFirstChild("HumanoidRootPart").Position + Vector3.new(0, distancia_tp, 0))
+					local targetRoot = plrr:FindFirstChild("HumanoidRootPart")
+					if targetRoot then
+
+						local pos = targetRoot.Position + Vector3.new(0, distancia_tp, 0)
+
+						local look = targetRoot.CFrame.LookVector
+						look = Vector3.new(look.X, 0, look.Z)
+
+						if look.Magnitude > 0 then
+							look = look.Unit
+						else
+							look = Vector3.new(0, 0, -1)
+						end
+
+						root.CFrame = CFrame.new(pos, pos + look)
+						if not root:FindFirstChild("TP_HOLD") then
+							local bv = Instance.new("BodyVelocity")
+							bv.Name = "TP_HOLD"
+							bv.MaxForce = Vector3.new(1,1,1) * 1000000
+							bv.Velocity = Vector3.zero
+							bv.Parent = root
+						end
+					end
 				end
 				break
 			end
