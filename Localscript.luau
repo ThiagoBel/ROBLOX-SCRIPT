@@ -8,7 +8,7 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
-local VERSAO_SLENDER = "0.8"
+local VERSAO_SLENDER = "0.9"
 local ID_LOADEDFIRST = "_LOADED_FIRST________"
 local ID_STOCKLIGHT = "_STOCK_LIGHT__________"
 local ID_CONSOLELOGS = "_CONSOLE_LOGS________"
@@ -29,12 +29,23 @@ local plr_FOCOMIRA = ""
 local speed_spam = 0
 local animAtual = nil
 local msgSpam = "wow"
-local maxMsgConsole = 33
+local maxMsgConsole = 100
 local ignoraAlvoComParede = true
+local ignoraAlvoMesmoTime = true
 --local nameID = math.random(1111, 9999) .. "_" .. math.random(1, 9) .. "__GUI_" .. math.random(1, 99999)
 local nameIDTHIS = "Configs"
 local _CARREGAMENTO__ = Instance.new("Hint")
 local first_time = true
+
+local function random(max)
+	local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+	local str = ""
+	for i = 1, max do
+		local index = math.random(1, #chars)
+		str = str .. chars:sub(index, index)
+	end
+	return str
+end
 
 if not plr:FindFirstChild(ID_LOADEDFIRST) then
 	first_time = true
@@ -224,16 +235,6 @@ local function isR6()
 	return hum.RigType == Enum.HumanoidRigType.R6
 end
 
-local function random(max)
-	local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-	local str = ""
-	for i = 1, max do
-		local index = math.random(1, #chars)
-		str = str .. chars:sub(index, index)
-	end
-	return str
-end
-
 local function addLog(msg, typee)
 	messagesusedsconsole += 1
 	if messagesusedsconsole >= maxMsgConsole then
@@ -301,7 +302,7 @@ end
 
 local function criarConfigItem(nome, valorInicial)
 	local container = Instance.new("Frame")
-	container.Size = UDim2.new(0.85, 0, 0.055, 0)
+	container.Size = UDim2.new(0.85, 0, 0.044, 0)
 	container.BackgroundTransparency = 1
 	container.Parent = configFrame
 
@@ -402,6 +403,7 @@ local spammsgBox = criarConfigItem("Mensagem no spam", msgSpam)
 local maxmsgconsoleBox = criarConfigItem("Mensagens máxima no console", maxMsgConsole)
 local arquivonameBox = criarConfigItem("Nome do gui", nameIDTHIS)
 local ignoraParedesBox = criarConfigItem("Ignora mira se tiver objeto", ignoraAlvoComParede)
+local ignorarplrtimeBox = criarConfigItem("Ignorar player do mesmo time", ignoraAlvoMesmoTime)
 
 if isR6() then
 	criarAnimBotao("Wave", 128777973)
@@ -447,6 +449,23 @@ else
 end
 
 local modalallb = false
+
+local function ehMesmoTime(model)
+	if not ignoraAlvoMesmoTime then
+		return false
+	end
+
+	local playerAlvo = game.Players:GetPlayerFromCharacter(model)
+	if not playerAlvo then
+		return false
+	end
+
+	if playerAlvo.Team == plr.Team then
+		return true
+	end
+
+	return false
+end
 
 local function temVisao(alvo)
 	if not alvo then
@@ -680,6 +699,9 @@ local function getNearestTarget()
 				if onlyplayers and not isPlayerModel(v) then
 					continue
 				end
+				if ehMesmoTime(v) then
+					continue
+				end
 				local distance = (root.Position - char.HumanoidRootPart.Position).Magnitude
 
 				if distance < shortestDistance then
@@ -709,6 +731,9 @@ local function getTargetNearMouse(maxDist)
 
 			if hum and root and hum.Health > 0 then
 				if onlyplayers and not isPlayerModel(v) then
+					continue
+				end
+				if ehMesmoTime(v) then
 					continue
 				end
 				local dist = (root.Position - mousePos).Magnitude
@@ -813,9 +838,20 @@ local function criarESP(model)
 	box.BackgroundTransparency = 1
 	box.Parent = billboard
 
+	local nome = Instance.new("TextLabel")
+	nome.Size = UDim2.new(1, 0, 0.2, 0)
+	nome.Position = UDim2.new(0, 0, 0, 0)
+	nome.BackgroundTransparency = 1
+	nome.TextScaled = true
+	nome.Font = Enum.Font.GothamBold
+	nome.TextColor3 = Color3.fromRGB(0, 0, 0)
+	nome.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+	nome.TextStrokeTransparency = 0
+	nome.Parent = billboard
+	
 	local stroke = Instance.new("UIStroke")
 	stroke.Thickness = 2
-	stroke.Color = Color3.fromRGB(255, 0, 0)
+	--stroke.Color = Color3.fromRGB(255, 0, 0)
 	stroke.Parent = box
 
 	local att0 = Instance.new("Attachment")
@@ -827,17 +863,35 @@ local function criarESP(model)
 	local beam = Instance.new("Beam")
 	beam.Attachment0 = att0
 	beam.Attachment1 = att1
-	beam.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
+	--beam.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
 	beam.Width0 = grossura_esp
 	beam.Width1 = grossura_esp
 	beam.FaceCamera = true
 	beam.Parent = att0
 
+	local corESP = Color3.fromRGB(255, 0, 0)
+
+	local plrcoiso = game.Players:GetPlayerFromCharacter(model)
+
+	if plrcoiso then
+		nome.Text = plrcoiso.Name
+	else
+		nome.Text = model.Name
+	end
+	
+	if ehMesmoTime(model) then
+		corESP = Color3.fromRGB(255, 255, 0)
+	end
+
+	stroke.Color = corESP
+	beam.Color = ColorSequence.new(corESP)
+	
 	espObjects[model] = {
 		billboard = billboard,
 		beam = beam,
 		att0 = att0,
-		att1 = att1
+		att1 = att1,
+		nome = nome
 	}
 end
 
@@ -928,9 +982,36 @@ run.RenderStepped:Connect(function()
 				data.att0.WorldPosition = char.HumanoidRootPart.Position
 			end
 		end
+
+		for model, data in pairs(espObjects) do
+			if model and data then
+				local corESP = Color3.fromRGB(255, 0, 0)
+
+				if ehMesmoTime(model) then
+					corESP = Color3.fromRGB(255, 255, 0)
+				end
+
+				if data.billboard then
+					local frame = data.billboard:FindFirstChildOfClass("Frame")
+					if frame then
+						local stroke = frame:FindFirstChildOfClass("UIStroke")
+						if stroke then
+							stroke.Color = corESP
+						end
+					end
+				end
+
+				if data.beam then
+					data.beam.Color = ColorSequence.new(corESP)
+				end
+			end
+		end
+
 		if onlyplayers then
 			for _, v in ipairs(game.Players:GetPlayers()) do
-				criarESP(v.Character)
+				if v.Character then
+					criarESP(v.Character)
+				end
 			end
 		else
 			for _, v in ipairs(workspace:GetChildren()) do
@@ -1561,6 +1642,17 @@ ignoraParedesBox.FocusLost:Connect(function()
 		ignoraParedesBox.Text = tostring(ignoraAlvoComParede)
 	end
 	ignoraParedesBox.Text = tostring(ignoraAlvoComParede)
+end)
+
+ignorarplrtimeBox.FocusLost:Connect(function()
+	if ignorarplrtimeBox.Text == "t" or ignorarplrtimeBox.Text == "true" then
+		ignoraAlvoMesmoTime = true
+	elseif ignorarplrtimeBox.Text == "f" or ignorarplrtimeBox.Text == "false" then
+		ignoraAlvoMesmoTime = false
+	else
+		ignorarplrtimeBox.Text = tostring(ignoraAlvoMesmoTime)
+	end
+	ignorarplrtimeBox.Text = tostring(ignoraAlvoMesmoTime)
 end)
 
 LGS.MessageOut:Connect(function(msg, typee)
