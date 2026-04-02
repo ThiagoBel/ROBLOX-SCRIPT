@@ -66,7 +66,7 @@ Instance.new("UICorner", main).CornerRadius = UDim.new(0.08, 0)
 Instance.new("UIDragDetector", main)
 
 local configFrame = Instance.new("Frame")
-configFrame.Size = UDim2.new(0.3, 0, 0.67, 0)
+configFrame.Size = UDim2.new(0.3, 0, 0.77, 0)
 configFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 configFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 configFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
@@ -301,7 +301,7 @@ end
 
 local function criarConfigItem(nome, valorInicial)
 	local container = Instance.new("Frame")
-	container.Size = UDim2.new(0.85, 0, 0.067, 0)
+	container.Size = UDim2.new(0.85, 0, 0.055, 0)
 	container.BackgroundTransparency = 1
 	container.Parent = configFrame
 
