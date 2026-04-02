@@ -8,7 +8,7 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
-local VERSAO_SLENDER = "0.9"
+local VERSAO_SLENDER = "1.0"
 local ID_LOADEDFIRST = "_LOADED_FIRST________"
 local ID_STOCKLIGHT = "_STOCK_LIGHT__________"
 local ID_CONSOLELOGS = "_CONSOLE_LOGS________"
@@ -18,6 +18,7 @@ local puxar_mira_size = 0.4
 local puxar_mira_raio = 10
 local grossura_esp = 0.05
 local distancia_tp = 2
+local tempoDuranteTPsuspeito = 0.05
 local cannoclip = true
 local existe = false
 local normalspeed = hum.WalkSpeed
@@ -25,6 +26,8 @@ local normalfov = cam.FieldOfView
 local messagesusedsconsole = 0
 local fovchanged = normalfov
 local plrspamed = ""
+local plrspamed2 = ""
+local plrspamed3 = ""
 local plr_FOCOMIRA = ""
 local speed_spam = 0
 local animAtual = nil
@@ -397,6 +400,9 @@ local noclipFlyBox = criarConfigItem("No Clip ao voar", cannoclip)
 local fovBox = criarConfigItem("FOV", normalfov)
 local tpBox = criarConfigItem("Teleporte facil", "")
 local tpSpamBox = criarConfigItem("Teleporte spam")
+local tpSpamBox2 = criarConfigItem("Teleporte spam doido")
+local tpSpamBox3 = criarConfigItem("Teleporte spam duvidoso")
+local tptemposuspeitoBox = criarConfigItem("Teleporte suspeito tempo", tempoDuranteTPsuspeito)
 local tplimitBox = criarConfigItem("Teleporte distancia limite", distancia_tp)
 local mirafocoBox = criarConfigItem("Focar em um player", plr_FOCOMIRA)
 local spammsgBox = criarConfigItem("Mensagem no spam", msgSpam)
@@ -404,6 +410,8 @@ local maxmsgconsoleBox = criarConfigItem("Mensagens máxima no console", maxMsgC
 local arquivonameBox = criarConfigItem("Nome do gui", nameIDTHIS)
 local ignoraParedesBox = criarConfigItem("Ignora mira se tiver objeto", ignoraAlvoComParede)
 local ignorarplrtimeBox = criarConfigItem("Ignorar player do mesmo time", ignoraAlvoMesmoTime)
+
+local tempoOsc = 0
 
 if isR6() then
 	criarAnimBotao("Wave", 128777973)
@@ -666,6 +674,7 @@ local function escondertudo()
 		distancia_tp = 2
 		plr_FOCOMIRA = ""
 		plrspamed = ""
+		plrspamed2 = ""
 		speed_spam = 0
 		fovchanged = normalfov
 		hum.WalkSpeed = normalspeed
@@ -919,6 +928,47 @@ run.RenderStepped:Connect(function()
 				local root = char:FindFirstChild("HumanoidRootPart")
 				if root then
 					root.CFrame = CFrame.new(plrr:FindFirstChild("HumanoidRootPart").Position + Vector3.new(0, distancia_tp, 0))
+				end
+				break
+			end
+		end
+	end
+	if plrspamed2 ~= "" then
+		for _, plrr in ipairs(workspace:GetChildren()) do
+			if plrr.Name == plrspamed2 and plrr:FindFirstChild("Humanoid") then
+				local targetRoot = plrr:FindFirstChild("HumanoidRootPart")
+				local root = char:FindFirstChild("HumanoidRootPart")
+				if root and targetRoot then
+					local tremor = 3
+					for i = 1, 30 do
+						local offset = Vector3.new(
+							(tremor * (math.random(0,1)*2 - 1)),
+							(tremor * (math.random(0,1)*2 - 1)),
+							(tremor * (math.random(0,1)*2 - 1))
+						)
+						root.CFrame = CFrame.new(targetRoot.Position + Vector3.new(0, distancia_tp, 0) + offset)
+						task.wait(0.03)
+					end
+				end
+				break
+			end
+		end
+	end
+	if plrspamed3 ~= "" then
+		for _, plrr in ipairs(workspace:GetChildren()) do
+			if plrr.Name == plrspamed3 and plrr:FindFirstChild("Humanoid") then
+				local targetRoot = plrr:FindFirstChild("HumanoidRootPart")
+				local root = char:FindFirstChild("HumanoidRootPart")
+
+				if root and targetRoot then
+					local velocidade = tempoDuranteTPsuspeito
+					local distancia = distancia_tp
+					tempoOsc += run.RenderStepped:Wait()
+					
+					local offsetZ = math.sin(tempoOsc * velocidade) * distancia
+					local basePos = targetRoot.Position - targetRoot.CFrame.LookVector * 4
+					local finalPos = basePos + targetRoot.CFrame.LookVector * offsetZ
+					root.CFrame = CFrame.new(finalPos + Vector3.new(0, 0, 0))
 				end
 				break
 			end
@@ -1602,6 +1652,40 @@ tpSpamBox.FocusLost:Connect(function()
 	tpSpamBox.Text = plrspamed
 end)
 
+tpSpamBox2.FocusLost:Connect(function()
+	if onlyplayers then
+		if tpSpamBox2.Text == "random" then
+			local vava = {}
+
+			for _, plrr in ipairs(game.Players:GetPlayers()) do
+				table.insert(vava, plrr.Name)
+			end
+			plrspamed2 = vava[math.random(1, #vava)]
+		else
+			for _, plrr in ipairs(game.Players:GetPlayers()) do
+				if plrr.Name == tpSpamBox2.Text then
+					plrspamed2 = plrr.Name
+					break
+				end
+			end
+		end
+	else
+		if tpSpamBox2.Text == "random" then
+			local vava = {}
+
+			for _, plrr in ipairs(workspace:GetDescendants()) do
+				if plrr:FindFirstChild("Humanoid") then
+					table.insert(vava, plrr.Name)
+				end
+			end
+			plrspamed2 = vava[math.random(1, #vava)]
+		else
+			plrspamed2 = tpSpamBox2.Text
+		end
+	end
+	tpSpamBox2.Text = plrspamed2
+end)
+
 tplimitBox.FocusLost:Connect(function()
 	local val = tonumber(tplimitBox.Text)
 	if val then
@@ -1653,6 +1737,19 @@ ignorarplrtimeBox.FocusLost:Connect(function()
 		ignorarplrtimeBox.Text = tostring(ignoraAlvoMesmoTime)
 	end
 	ignorarplrtimeBox.Text = tostring(ignoraAlvoMesmoTime)
+end)
+
+tptemposuspeitoBox.FocusLost:Connect(function()
+	local val = tonumber(tptemposuspeitoBox.Text)
+	if val then
+		tempoDuranteTPsuspeito = val
+	end
+	tptemposuspeitoBox.Text = tostring(tempoDuranteTPsuspeito)
+end)
+
+tpSpamBox3.FocusLost:Connect(function()
+	plrspamed3 = tpSpamBox3.Text
+	tpSpamBox3.Text = tostring(plrspamed3)
 end)
 
 LGS.MessageOut:Connect(function(msg, typee)
