@@ -1,4 +1,5 @@
 -- oi
+local LGS = game:GetService("LogService")
 local UIS = game:GetService("UserInputService")
 local run = game:GetService("RunService")
 local plr = game.Players.LocalPlayer
@@ -7,9 +8,10 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
-local VERSAO_SLENDER = "0.7"
+local VERSAO_SLENDER = "0.8"
 local ID_LOADEDFIRST = "_LOADED_FIRST________"
 local ID_STOCKLIGHT = "_STOCK_LIGHT__________"
+local ID_CONSOLELOGS = "_CONSOLE_LOGS________"
 --[[local ID_TERCEROZOI_OBJ = "_TERCEIRO_OLHO____"
 local SUBID_TERCEROZOI_VV = 0.5]]
 local puxar_mira_size = 0.4
@@ -20,12 +22,16 @@ local cannoclip = true
 local existe = false
 local normalspeed = hum.WalkSpeed
 local normalfov = cam.FieldOfView
+local messagesusedsconsole = 0
 local fovchanged = normalfov
 local plrspamed = ""
 local plr_FOCOMIRA = ""
 local speed_spam = 0
 local animAtual = nil
-local nameID = math.random(1111, 9999) .. "_" .. math.random(1, 9) .. "__GUI_" .. math.random(1, 99999)
+local msgSpam = "wow"
+local maxMsgConsole = 33
+local ignoraAlvoComParede = true
+--local nameID = math.random(1111, 9999) .. "_" .. math.random(1, 9) .. "__GUI_" .. math.random(1, 99999)
 local nameIDTHIS = "Configs"
 local _CARREGAMENTO__ = Instance.new("Hint")
 local first_time = true
@@ -81,6 +87,34 @@ animFrame.Parent = gui
 Instance.new("UICorner", animFrame).CornerRadius = UDim.new(0.08, 0)
 Instance.new("UIDragDetector", animFrame)
 
+local consoleDragFrame = Instance.new("Frame")
+consoleDragFrame.Size = UDim2.new(0.3, 0, 0.56, 0)
+consoleDragFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+consoleDragFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+consoleDragFrame.BackgroundTransparency = 1
+consoleDragFrame.Visible = false
+consoleDragFrame.Parent = gui
+
+local consoleFrame = Instance.new("ScrollingFrame")
+consoleFrame.Size = UDim2.new(1, 0, 1, 0)
+consoleFrame.CanvasSize = UDim2.new(0,0,0,0)
+consoleFrame.ScrollBarThickness = 6
+consoleFrame.BackgroundColor3 = Color3.fromRGB(10,10,10)
+consoleFrame.Parent = consoleDragFrame
+
+--[[local consoleFrame = Instance.new("ScrollingFrame")
+consoleFrame.CanvasSize = UDim2.new(0,0,0,0)
+consoleFrame.ScrollBarThickness = 6
+consoleFrame.Size = UDim2.new(0.3, 0, 0.67, 0)
+consoleFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+consoleFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+consoleFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+consoleFrame.Visible = false
+consoleFrame.Parent = gui]]
+
+Instance.new("UICorner", consoleFrame).CornerRadius = UDim.new(0.08, 0)
+Instance.new("UIDragDetector", consoleDragFrame)
+
 local layout = Instance.new("UIListLayout")
 layout.Padding = UDim.new(0.01, 0)
 layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
@@ -88,12 +122,18 @@ layout.VerticalAlignment = Enum.VerticalAlignment.Center
 layout.Parent = configFrame
 
 local layout2 = Instance.new("UIListLayout")
+layout2.Padding = UDim.new(0.01, 0)
+layout2.HorizontalAlignment = Enum.HorizontalAlignment.Center
+layout2.VerticalAlignment = Enum.VerticalAlignment.Center
+layout2.Parent = consoleFrame
+
+--[[local layout2 = Instance.new("UIListLayout")
 layout2.Padding = UDim.new(0.05, 0)
 layout2.HorizontalAlignment = Enum.HorizontalAlignment.Center
 layout2.VerticalAlignment = Enum.VerticalAlignment.Center
 layout2.FillDirection = Enum.FillDirection.Horizontal
 layout2.Wraps = true
-layout2.Parent = animFrame
+layout2.Parent = animFrame]]
 
 local stroke = Instance.new("UIStroke")
 stroke.Color = Color3.fromRGB(120, 120, 255)
@@ -112,6 +152,12 @@ stroke3.Color = Color3.fromRGB(120, 120, 255)
 stroke3.Thickness = 2
 stroke3.Transparency = 0.3
 stroke3.Parent = animFrame
+
+local stroke4 = Instance.new("UIStroke")
+stroke4.Color = Color3.fromRGB(120, 120, 255)
+stroke4.Thickness = 2
+stroke4.Transparency = 0.3
+stroke4.Parent = consoleFrame
 
 local grad = Instance.new("UIGradient")
 grad.Color = ColorSequence.new{
@@ -144,8 +190,78 @@ grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
 grid.VerticalAlignment = Enum.VerticalAlignment.Center
 grid.Parent = main
 
+local grid2 = Instance.new("UIGridLayout")
+grid2.CellPadding = UDim2.new(0.05, 0, 0.05, 0)
+grid2.CellSize = UDim2.new(0.2, 0, 0.1, 0)
+grid2.HorizontalAlignment = Enum.HorizontalAlignment.Left
+grid2.VerticalAlignment = Enum.VerticalAlignment.Center
+grid2.FillDirectionMaxCells = 88
+grid2.Parent = animFrame
+
+local consoletxt = Instance.new("TextLabel")
+consoletxt.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+consoletxt.BackgroundTransparency = 1
+consoletxt.Size = UDim2.new(1, 0, 1, 0)
+consoletxt.TextColor3 = Color3.fromRGB(255, 255, 255)
+consoletxt.TextScaled = false
+consoletxt.TextSize = 14
+consoletxt.TextWrapped = true
+consoletxt.RichText = true
+if game.ReplicatedStorage:FindFirstChild(ID_CONSOLELOGS) then
+	if game.ReplicatedStorage:FindFirstChild(ID_CONSOLELOGS).Value == "" then
+		consoletxt.Text = "<font color='rgb(88, 255, 144)'>Console</font>"
+	else
+		consoletxt.Text = game.ReplicatedStorage:FindFirstChild(ID_CONSOLELOGS).Value
+	end
+else
+	consoletxt.Text = "<font color='rgb(88, 255, 144)'>Console</font>"
+end
+consoletxt.TextXAlignment = Enum.TextXAlignment.Left
+consoletxt.TextYAlignment = Enum.TextYAlignment.Top
+consoletxt.Parent = consoleFrame
+
 local function isR6()
 	return hum.RigType == Enum.HumanoidRigType.R6
+end
+
+local function random(max)
+	local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+	local str = ""
+	for i = 1, max do
+		local index = math.random(1, #chars)
+		str = str .. chars:sub(index, index)
+	end
+	return str
+end
+
+local function addLog(msg, typee)
+	messagesusedsconsole += 1
+	if messagesusedsconsole >= maxMsgConsole then
+		consoletxt.Text = "<font color='rgb(88, 255, 144)'>Console</font>"
+		messagesusedsconsole = 0
+	end
+	if typee == Enum.MessageType.MessageError then
+		consoletxt.Text = consoletxt.Text .. "\n<font color='rgb(255, 0, 0)'>" .. msg .. "</font>"
+	elseif typee == Enum.MessageType.MessageWarning then
+		consoletxt.Text = consoletxt.Text .. "\n<font color='rgb(255, 162, 0)'>" .. msg .. "</font>"
+	elseif typee == Enum.MessageType.MessageInfo then
+		consoletxt.Text = consoletxt.Text .. "\n<font color='rgb(0, 145, 255)'>" .. msg .. "</font>"
+	elseif typee == Enum.MessageType.MessageOutput then
+		consoletxt.Text = consoletxt.Text .. "\n<font color='rgb(255, 255, 255)'>" .. msg .. "</font>"
+	else
+		consoletxt.Text = consoletxt.Text .. "\n<font color='rgb(255, 0, 234)'>" .. msg .. "</font>"
+	end
+	if game.ReplicatedStorage:FindFirstChild(ID_CONSOLELOGS) then
+		game.ReplicatedStorage:FindFirstChild(ID_CONSOLELOGS).Value = consoletxt.Text
+	else
+		local coissss = Instance.new("StringValue")
+		coissss.Name = ID_CONSOLELOGS
+		coissss.Value = consoletxt.Text
+		coissss.Parent = game.ReplicatedStorage
+	end
+	task.wait()
+	consoleFrame.CanvasSize = UDim2.new(0, 0, 0, consoletxt.TextBounds.Y + 20)
+	consoleFrame.CanvasPosition = Vector2.new(0, consoleFrame.CanvasSize.Y.Offset)
 end
 
 local function criarBotao(texto)
@@ -259,6 +375,7 @@ local espbtn = criarBotao("ESP")
 local aimbotbtn = criarBotao("Aimbot")
 local tpbtn = criarBotao("Teleportar - T")
 local spambtn = criarBotao("Spam remote")
+local spammodbtn = criarBotao("Spam module")
 local scriptsbtn = criarBotao("Desativar scripts")
 local vsnotbtn = criarBotao("Visão noturna")
 local puxarbtn = criarBotao("Puxar mira")
@@ -267,6 +384,7 @@ local onlyplrbtn = criarBotao("Apenas players")
 local onlyheadbtn = criarBotao("Só capa")
 local configbtn = criarBotao("Configurações")
 local animbtn = criarBotao("Animações")
+local consolebtn = criarBotao("Console")
 --local transparencybtn = criarBotao("Terceiro olho")
 
 local speedBox = criarConfigItem("Velocidade", hum.WalkSpeed)
@@ -280,6 +398,10 @@ local tpBox = criarConfigItem("Teleporte facil", "")
 local tpSpamBox = criarConfigItem("Teleporte spam")
 local tplimitBox = criarConfigItem("Teleporte distancia limite", distancia_tp)
 local mirafocoBox = criarConfigItem("Focar em um player", plr_FOCOMIRA)
+local spammsgBox = criarConfigItem("Mensagem no spam", msgSpam)
+local maxmsgconsoleBox = criarConfigItem("Mensagens máxima no console", maxMsgConsole)
+local arquivonameBox = criarConfigItem("Nome do gui", nameIDTHIS)
+local ignoraParedesBox = criarConfigItem("Ignora mira se tiver objeto", ignoraAlvoComParede)
 
 if isR6() then
 	criarAnimBotao("Wave", 128777973)
@@ -288,6 +410,11 @@ if isR6() then
 	criarAnimBotao("Dance 1", 182435998)
 	criarAnimBotao("Dance 2", 182436842)
 	criarAnimBotao("Dance 3", 182436935)
+	criarAnimBotao("Pointer", 248263260)
+	criarAnimBotao("Boogie", 45834924)
+	criarAnimBotao("PartyTime", 33796059)
+	criarAnimBotao("Goal", 28488254)
+	criarAnimBotao("Laugh", 129423131)
 else
 	criarAnimBotao("Dance 1", 507771019)
 	criarAnimBotao("Dance 2", 507776043)
@@ -297,9 +424,59 @@ else
 	criarAnimBotao("Cheer", 507770677)
 	criarAnimBotao("Laugh", 507770818)
 	criarAnimBotao("Sit", 2506281703)
+	criarAnimBotao("bbdance", 4265725525)
+	criarAnimBotao("Bored", 5230599789)
+	criarAnimBotao("Cower", 4940563117)
+	criarAnimBotao("Disco", 3333136415)
+	criarAnimBotao("Dizzy", 3361426436)
+	criarAnimBotao("Dorky", 4212455378)
+	criarAnimBotao("e", 5464623985)
+	criarAnimBotao("Fancyfeet", 3333432454)
+	criarAnimBotao("Fashionable", 3333331310)
+	criarAnimBotao("Fasthands", 4265701731)
+	criarAnimBotao("Godlike", 3337994105)
+	criarAnimBotao("Happy", 4841405708)
+	criarAnimBotao("Heroland", 5104344710)
+	criarAnimBotao("Monkey", 3333499508)
+	criarAnimBotao("Rock", 3361276673)
+	criarAnimBotao("Noobflex", 3333387824)
+	criarAnimBotao("Shuffle", 4349242221)
+	criarAnimBotao("Shy", 3337978742)
+	criarAnimBotao("Sleep", 4686925579)
+	criarAnimBotao("Twirl", 3334968680)
 end
 
 local modalallb = false
+
+local function temVisao(alvo)
+	if not alvo then
+		return false
+	end
+
+	if not ignoraAlvoComParede then
+		return true
+	end
+	
+	local origem = cam.CFrame.Position
+	local destino = alvo.Position
+	local direcao = (destino - origem)
+
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Blacklist
+	params.FilterDescendantsInstances = {char}
+
+	local resultado = workspace:Raycast(origem, direcao, params)
+
+	if resultado then
+		if resultado.Instance:IsDescendantOf(alvo.Parent) then
+			return true
+		else
+			return false
+		end
+	end
+
+	return true
+end
 
 local function isPlayerModel(model)
 	return game.Players:GetPlayerFromCharacter(model) ~= nil
@@ -320,6 +497,7 @@ local esp = false
 local fly = false
 local cantp = false
 local spamrem = false
+local spammod = false
 local scriptsoff = false
 local vsnot = false
 local puxarmira = false
@@ -328,6 +506,7 @@ local onlyhead = false
 local configsopen = false
 local animopen = false
 local terceirozoi = false
+local consoleopen = false
 
 local alvoAtual = nil
 local bv
@@ -386,6 +565,7 @@ local function escondertudo()
 	fly = false
 	cantp = false
 	spamrem = false
+	spammod = false
 	scriptsoff = false
 	vsnot = false
 	puxarmira = false
@@ -393,6 +573,7 @@ local function escondertudo()
 	onlyhead = false
 	configsopen = false
 	animopen = false
+	consoleopen = false
 
 	task.spawn(function()
 		flybtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
@@ -409,6 +590,9 @@ local function escondertudo()
 
 		spambtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 		spambtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		spammodbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		spammodbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 		scriptsbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 		scriptsbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -431,6 +615,9 @@ local function escondertudo()
 
 		animbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 		animbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+		consolebtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		consolebtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 		local function ativar(scr)
 			local tag = scr:FindFirstChild("_DESATIVADO_VIAX")
 			if tag then
@@ -465,6 +652,7 @@ local function escondertudo()
 		hum.WalkSpeed = normalspeed
 		configFrame.Visible = false
 		animFrame.Visible = false
+		consoleDragFrame.Visible = false
 
 		speedBox.Text = tostring(hum.WalkSpeed)
 		puxarBox.Text = tostring(puxar_mira_size)
@@ -762,7 +950,7 @@ run.RenderStepped:Connect(function()
 				cam.CFrame = CFrame.new(cam.CFrame.Position, alvoAtual.Position)
 			end
 		else
-			if alvoAtual then
+			if alvoAtual and temVisao(alvoAtual) then
 				cam.CFrame = CFrame.new(cam.CFrame.Position, alvoAtual.Position)
 			end
 		end
@@ -771,7 +959,7 @@ run.RenderStepped:Connect(function()
 		local alvo = getTargetNearMouse(puxar_mira_raio)
 
 		if plr_FOCOMIRA ~= "" then
-			if alvo and alvo.Parent.Name == plr_FOCOMIRA then
+			if alvo and alvo.Parent.Name == plr_FOCOMIRA and temVisao(alvo) then
 				local posCam = cam.CFrame.Position
 				local posAlvo = alvo.Position
 
@@ -781,7 +969,7 @@ run.RenderStepped:Connect(function()
 				)
 			end
 		else
-			if alvo then
+			if alvo and temVisao(alvo) then
 				local posCam = cam.CFrame.Position
 				local posAlvo = alvo.Position
 
@@ -804,7 +992,7 @@ run.RenderStepped:Connect(function()
 			papapasta:SetAttribute("EnvironmentDiffuseScale", game.Lighting.EnvironmentDiffuseScale)
 		end
 		for _, coisasluz in ipairs(game.Lighting:GetChildren()) do
-			if coisasluz:IsA("Atmosphere") then
+			if coisasluz:IsA("Atmosphere") or coisasluz:IsA("Sky") then
 				coisasluz.Parent = game.ReplicatedStorage:FindFirstChild(ID_STOCKLIGHT)
 			end
 		end
@@ -929,31 +1117,72 @@ spambtn.MouseButton1Click:Connect(function()
 			for _, remoten in ipairs(game.ReplicatedStorage:GetDescendants()) do
 				if remoten:IsA("RemoteEvent") then
 					remoten:FireServer()
+					remoten:FireServer(msgSpam)
 				elseif remoten:IsA("BindableEvent") then
 					remoten:Fire()
+					remoten:Fire(msgSpam)
 				end
 			end
 			for _, remoten in ipairs(workspace:GetDescendants()) do
 				if remoten:IsA("RemoteEvent") then
 					remoten:FireServer()
+					remoten:FireServer(msgSpam)
 				elseif remoten:IsA("BindableEvent") then
 					remoten:Fire()
+					remoten:Fire(msgSpam)
 				end
 			end
-			for _, remoten in ipairs(game.ReplicatedStorage:GetDescendants()) do
-				if remoten:IsA("RemoteEvent") then
-					remoten:FireServer("wow")
-				elseif remoten:IsA("BindableEvent") then
-					remoten:Fire("wow")
+			task.wait(0.1)
+		end
+	end)
+end)
+
+spammodbtn.MouseButton1Click:Connect(function()
+	spammod = not spammod
+
+	if spammod then
+		spammodbtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		spammodbtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+	else
+		spammodbtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		spammodbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	end
+
+	task.spawn(function()
+		while spammod do
+			for _, modulen in ipairs(game.ReplicatedStorage:GetDescendants()) do
+				if modulen:IsA("ModuleScript") then
+					pcall(function()
+						local m = require(modulen)
+
+						if typeof(m) == "table" then
+							local f = m[msgSpam]
+							if typeof(f) == "function" then
+								f(msgSpam)
+							end
+						elseif typeof(m) == "function" then
+							m(msgSpam)
+						end
+					end)
 				end
 			end
-			for _, remoten in ipairs(workspace:GetDescendants()) do
-				if remoten:IsA("RemoteEvent") then
-					remoten:FireServer("wow")
-				elseif remoten:IsA("BindableEvent") then
-					remoten:Fire("wow")
+			for _, modulen in ipairs(workspace:GetDescendants()) do
+				if modulen:IsA("ModuleScript") then
+					pcall(function()
+						local m = require(modulen)
+
+						if typeof(m) == "table" then
+							local f = m[msgSpam]
+							if typeof(f) == "function" then
+								f(msgSpam)
+							end
+						elseif typeof(m) == "function" then
+							m(msgSpam)
+						end
+					end)
 				end
 			end
+
 			task.wait(0.1)
 		end
 	end)
@@ -1091,6 +1320,7 @@ end)
 configbtn.MouseButton1Click:Connect(function()
 	configsopen = not configsopen
 	configFrame.Visible = not configFrame.Visible
+
 	if configsopen then
 		configbtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		configbtn.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -1113,6 +1343,18 @@ animbtn.MouseButton1Click:Connect(function()
 	end
 end)
 
+consolebtn.MouseButton1Click:Connect(function()
+	consoleopen = not consoleopen
+	consoleDragFrame.Visible = not consoleDragFrame.Visible
+
+	if consoleopen then
+		consolebtn.BackgroundColor3 = Color3.fromRGB(255,255,255)
+		consolebtn.TextColor3 = Color3.fromRGB(0,0,0)
+	else
+		consolebtn.BackgroundColor3 = Color3.fromRGB(35,35,35)
+		consolebtn.TextColor3 = Color3.fromRGB(255,255,255)
+	end
+end)
 --[[transparencybtn.MouseButton1Click:Connect(function()
 	terceirozoi = not terceirozoi
 
@@ -1124,6 +1366,17 @@ end)
 		transparencybtn.TextColor3 = Color3.fromRGB(255,255,255)
 	end
 end)]]
+
+hum.Died:Connect(function()
+	local activationnn = false
+	if consoleDragFrame.Visible == true then
+		activationnn = true
+	end
+	escondertudo()
+	if activationnn == true then
+		consoleDragFrame.Visible = true
+	end
+end)
 
 plr.CharacterAdded:Connect(function(newChar)
 	script:Clone().Parent = plr.PlayerScripts
@@ -1236,14 +1489,34 @@ end)
 
 tpSpamBox.FocusLost:Connect(function()
 	if onlyplayers then
-		for _, plrr in ipairs(game.Players:GetPlayers()) do
-			if plrr.Name == tpSpamBox.Text then
-				plrspamed = plrr.Name
-				break
+		if tpSpamBox.Text == "random" then
+			local vava = {}
+
+			for _, plrr in ipairs(game.Players:GetPlayers()) do
+				table.insert(vava, plrr.Name)
+			end
+			plrspamed = vava[math.random(1, #vava)]
+		else
+			for _, plrr in ipairs(game.Players:GetPlayers()) do
+				if plrr.Name == tpSpamBox.Text then
+					plrspamed = plrr.Name
+					break
+				end
 			end
 		end
 	else
-		plrspamed = tpSpamBox.Text
+		if tpSpamBox.Text == "random" then
+			local vava = {}
+
+			for _, plrr in ipairs(workspace:GetDescendants()) do
+				if plrr:FindFirstChild("Humanoid") then
+					table.insert(vava, plrr.Name)
+				end
+			end
+			plrspamed = vava[math.random(1, #vava)]
+		else
+			plrspamed = tpSpamBox.Text
+		end
 	end
 	tpSpamBox.Text = plrspamed
 end)
@@ -1259,6 +1532,41 @@ end)
 mirafocoBox.FocusLost:Connect(function()
 	plr_FOCOMIRA = mirafocoBox.Text
 	mirafocoBox.Text = plr_FOCOMIRA
+end)
+
+spammsgBox.FocusLost:Connect(function()
+	msgSpam = spammsgBox.Text
+	spammsgBox.Text = msgSpam
+end)
+
+maxmsgconsoleBox.FocusLost:Connect(function()
+	local val = tonumber(maxmsgconsoleBox.Text)
+	if val then
+		maxMsgConsole = val
+	end
+	maxmsgconsoleBox.Text = tostring(maxMsgConsole)
+end)
+
+arquivonameBox.FocusLost:Connect(function()
+	nameIDTHIS = arquivonameBox.Text
+	arquivonameBox.Text = nameIDTHIS
+end)
+
+ignoraParedesBox.FocusLost:Connect(function()
+	if ignoraParedesBox.Text == "t" or ignoraParedesBox.Text == "true" then
+		ignoraAlvoComParede = true
+	elseif ignoraParedesBox.Text == "f" or ignoraParedesBox.Text == "false" then
+		ignoraAlvoComParede = false
+	else
+		ignoraParedesBox.Text = tostring(ignoraAlvoComParede)
+	end
+	ignoraParedesBox.Text = tostring(ignoraAlvoComParede)
+end)
+
+LGS.MessageOut:Connect(function(msg, typee)
+	msg = tostring(msg):gsub("<", "&lt;"):gsub(">", "&gt;")
+
+	addLog(msg, typee)
 end)
 
 task.spawn(function()
