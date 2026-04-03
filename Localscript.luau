@@ -8,7 +8,7 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
-local VERSAO_SLENDER = "1.2"
+local VERSAO_SLENDER = "1.25"
 local ID_LOADEDFIRST = "_LOADED_FIRST________"
 local ID_STOCKLIGHT = "_STOCK_LIGHT__________"
 local ID_CONSOLELOGS = "_CONSOLE_LOGS________"
@@ -483,7 +483,7 @@ local function temVisao(alvo)
 	if not ignoraAlvoComParede then
 		return true
 	end
-	
+
 	local origem = cam.CFrame.Position
 	local destino = alvo.Position
 	local direcao = (destino - origem)
@@ -857,7 +857,7 @@ local function criarESP(model)
 	nome.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
 	nome.TextStrokeTransparency = 0
 	nome.Parent = billboard
-	
+
 	local stroke = Instance.new("UIStroke")
 	stroke.Thickness = 2
 	--stroke.Color = Color3.fromRGB(255, 0, 0)
@@ -887,14 +887,14 @@ local function criarESP(model)
 	else
 		nome.Text = model.Name
 	end
-	
+
 	if ehMesmoTime(model) then
 		corESP = Color3.fromRGB(255, 255, 0)
 	end
 
 	stroke.Color = corESP
 	beam.Color = ColorSequence.new(corESP)
-	
+
 	espObjects[model] = {
 		billboard = billboard,
 		beam = beam,
@@ -922,7 +922,7 @@ run.RenderStepped:Connect(function()
 	if speed_spam ~= 0 then
 		hum.WalkSpeed = speed_spam
 	end
-	if plrspamed ~= "" then
+	if plrspamed ~= "nil" and plrspamed ~= "" then
 		for _, plrr in ipairs(workspace:GetChildren()) do
 			if plrr.Name == plrspamed and plrr:FindFirstChild("Humanoid") then
 				local root = char:FindFirstChild("HumanoidRootPart")
@@ -953,6 +953,11 @@ run.RenderStepped:Connect(function()
 				end
 				break
 			end
+		end
+	else
+		local root = char:FindFirstChild("HumanoidRootPart")
+		if root and root:FindFirstChild("TP_HOLD") then
+			root.TP_HOLD:Destroy()
 		end
 	end
 	if plrspamed2 ~= "" then
