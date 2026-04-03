@@ -8,7 +8,7 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 local pg = plr.PlayerGui
 
-local VERSAO_SLENDER = "1.25"
+local VERSAO_SLENDER = "1.3"
 local ID_LOADEDFIRST = "_LOADED_FIRST________"
 local ID_STOCKLIGHT = "_STOCK_LIGHT__________"
 local ID_CONSOLELOGS = "_CONSOLE_LOGS________"
@@ -17,8 +17,8 @@ local SUBID_TERCEROZOI_VV = 0.5]]
 local puxar_mira_size = 0.4
 local puxar_mira_raio = 10
 local grossura_esp = 0.05
-local distancia_tp = 2
-local tempoDuranteTPsuspeito = 0.05
+local distancia_tp = 3.5
+local tempoDuranteTPsuspeito = 5
 local cannoclip = true
 local existe = false
 local normalspeed = hum.WalkSpeed
@@ -205,9 +205,9 @@ grid.VerticalAlignment = Enum.VerticalAlignment.Center
 grid.Parent = main
 
 local grid2 = Instance.new("UIGridLayout")
-grid2.CellPadding = UDim2.new(0.05, 0, 0.05, 0)
+grid2.CellPadding = UDim2.new(0.02, 0, 0.02, 0)
 grid2.CellSize = UDim2.new(0.2, 0, 0.1, 0)
-grid2.HorizontalAlignment = Enum.HorizontalAlignment.Left
+grid2.HorizontalAlignment = Enum.HorizontalAlignment.Center
 grid2.VerticalAlignment = Enum.VerticalAlignment.Center
 grid2.FillDirectionMaxCells = 88
 grid2.Parent = animFrame
@@ -336,7 +336,7 @@ end
 
 local function criarAnimBotao(nome, id)
 	local btn = Instance.new("TextButton")
-	btn.Size = UDim2.new(0.3, 0, 0.1, 0)
+	btn.Size = UDim2.new(0.2, 0, 0.05, 0)
 	btn.Text = nome
 	btn.BackgroundColor3 = Color3.fromRGB(35,35,35)
 	btn.TextColor3 = Color3.new(1,1,1)
@@ -425,6 +425,13 @@ if isR6() then
 	criarAnimBotao("PartyTime", 33796059)
 	criarAnimBotao("Goal", 28488254)
 	criarAnimBotao("Laugh", 129423131)
+	criarAnimBotao("Walk", 180426354)
+	
+	criarAnimBotao("Giro", 188632011)
+	criarAnimBotao("Classic dance", 27789359)
+	criarAnimBotao("Fun dance", 52155728)
+	criarAnimBotao("idk", 35654637)
+	criarAnimBotao("Groove dance", 183412246)
 else
 	criarAnimBotao("Dance 1", 507771019)
 	criarAnimBotao("Dance 2", 507776043)
@@ -440,7 +447,6 @@ else
 	criarAnimBotao("Disco", 3333136415)
 	criarAnimBotao("Dizzy", 3361426436)
 	criarAnimBotao("Dorky", 4212455378)
-	criarAnimBotao("e", 5464623985)
 	criarAnimBotao("Fancyfeet", 3333432454)
 	criarAnimBotao("Fashionable", 3333331310)
 	criarAnimBotao("Fasthands", 4265701731)
@@ -454,6 +460,8 @@ else
 	criarAnimBotao("Shy", 3337978742)
 	criarAnimBotao("Sleep", 4686925579)
 	criarAnimBotao("Twirl", 3334968680)
+	criarAnimBotao("Walk 1", 507777826)
+	criarAnimBotao("Walk 2", 12518152696)
 end
 
 local modalallb = false
