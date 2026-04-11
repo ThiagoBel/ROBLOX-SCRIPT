@@ -6,9 +6,8 @@ local plr = game.Players.LocalPlayer
 local cam = workspace.CurrentCamera
 local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
-local pg = plr.PlayerGui
 
-local VERSAO_SLENDER = "1.3"
+local VERSAO_SLENDER = "1.4"
 local ID_LOADEDFIRST = "_LOADED_FIRST________"
 local ID_STOCKLIGHT = "_STOCK_LIGHT__________"
 local ID_CONSOLELOGS = "_CONSOLE_LOGS________"
@@ -65,7 +64,7 @@ _CARREGAMENTO__.Parent = workspace
 local gui = Instance.new("ScreenGui")
 gui.Name = nameIDTHIS
 gui.IgnoreGuiInset = true
-gui.Parent = game:GetService("CoreGui")
+gui.Parent = game:GetService("CoreGui") or plr:FindFirstChild("PlayerGui")
 gui.ResetOnSpawn = true
 
 local main = Instance.new("Frame")
@@ -483,6 +482,11 @@ local function ehMesmoTime(model)
 	return false
 end
 
+local function alvoVivo(model)
+	local hum = model:FindFirstChild("Humanoid")
+	return hum and hum.Health > 0
+end
+
 local function temVisao(alvo)
 	if not alvo then
 		return false
@@ -712,7 +716,7 @@ local function getNearestTarget()
 				root = v:FindFirstChild("Head") or v:FindFirstChild("HumanoidRootPart") or v:FindFirstChild("UpperTorso")
 			end
 
-			if hum and root and hum.Health > 0 then
+			if root and alvoVivo(v) then
 				if onlyplayers and not isPlayerModel(v) then
 					continue
 				end
@@ -746,7 +750,7 @@ local function getTargetNearMouse(maxDist)
 				root = v:FindFirstChild("Head") or v:FindFirstChild("HumanoidRootPart") or v:FindFirstChild("UpperTorso")
 			end
 
-			if hum and root and hum.Health > 0 then
+			if root and alvoVivo(v) then
 				if onlyplayers and not isPlayerModel(v) then
 					continue
 				end
