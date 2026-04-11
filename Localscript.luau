@@ -7,7 +7,7 @@ local cam = workspace.CurrentCamera
 local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
 
-local VERSAO_SLENDER = "1.4"
+local VERSAO_SLENDER = "1.5"
 local ID_LOADEDFIRST = "_LOADED_FIRST________"
 local ID_STOCKLIGHT = "_STOCK_LIGHT__________"
 local ID_CONSOLELOGS = "_CONSOLE_LOGS________"
@@ -1542,7 +1542,7 @@ end)
 	end
 end)]]
 
-hum.Died:Connect(function()
+--[[hum.Died:Connect(function()
 	local activationnn = false
 	if consoleDragFrame.Visible == true then
 		activationnn = true
@@ -1551,7 +1551,7 @@ hum.Died:Connect(function()
 	if activationnn == true then
 		consoleDragFrame.Visible = true
 	end
-end)
+end)]]
 
 plr.CharacterAdded:Connect(function(newChar)
 	script:Clone().Parent = plr.PlayerScripts
