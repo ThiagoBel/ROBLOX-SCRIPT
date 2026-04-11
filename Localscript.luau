@@ -65,7 +65,7 @@ _CARREGAMENTO__.Parent = workspace
 local gui = Instance.new("ScreenGui")
 gui.Name = nameIDTHIS
 gui.IgnoreGuiInset = true
-gui.Parent = pg
+gui.Parent = game:GetService("CoreGui")
 gui.ResetOnSpawn = true
 
 local main = Instance.new("Frame")
